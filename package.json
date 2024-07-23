@@ -9,7 +9,7 @@
     "build": "webpack --config webpack.config.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Abdullah-Khawahir <abdullah.khawahir@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.24.8",

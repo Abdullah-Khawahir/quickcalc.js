@@ -8,6 +8,8 @@ import { units, areSameCatagory } from './units.js';
  * @throws if the units are not the same
  */
 export function convert(value, fromUnit, toUnit) {
+	// __AUTO_GENERATED_PRINT_VAR_START__
+	console.log("convert value, fromUnit, toUnit: %s", value, fromUnit, toUnit); // __AUTO_GENERATED_PRINT_VAR_END__
 	if (!units[fromUnit] || !units[toUnit]) {
 		throw new Error('Invalid unit provided for conversion');
 	}
@@ -19,6 +21,8 @@ export function convert(value, fromUnit, toUnit) {
 
 	// Convert the base value to the target unit
 	const convertedValue = baseValue / units[toUnit];
+	// __AUTO_GENERATED_PRINT_VAR_START__
+	console.log("convert convertedValue: %s", convertedValue); // __AUTO_GENERATED_PRINT_VAR_END__
 
 	return convertedValue;
 }

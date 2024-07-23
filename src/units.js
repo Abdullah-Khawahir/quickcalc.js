@@ -15,6 +15,8 @@ const timeUnits = {
 	week,
 	year,
 	now: Date.now(),
+	tomorrow: 0,
+	yesterday: 0,
 
 
 	ms: millisecond,
