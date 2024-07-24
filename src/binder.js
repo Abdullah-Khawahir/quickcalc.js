@@ -24,7 +24,7 @@ export function bind(evnt, eventType, suffix, trigger, onError) {
 			if (evaluation)
 				evnt.target.value = evaluation
 		} catch (err) {
-			if (onError) onError(err)
+			if (onError !== undefined) onError(err)
 		}
 	}
 }

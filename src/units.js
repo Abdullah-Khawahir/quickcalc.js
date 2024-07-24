@@ -152,7 +152,6 @@ export function areSameCatagory(unit1, unit2) {
 	}
 	return false
 }
-
 /**
  * @param {string} unit1 
  * @param {string} unit2 
@@ -161,5 +160,25 @@ export function areSameCatagory(unit1, unit2) {
 export function areTimeUnits(unit1, unit2) {
 	return timeUnits[unit1] && timeUnits[unit2]
 }
+/**
+ * @param {string} unit
+ * @returns { { unit1:string, unit2:string } | undefined  } retruns the units else return undefined 
+ **/
+export function breakCompoundUnit(unit) {
+	const parts = unit.split(/(per|\/)/i).filter(Boolean)
+	if (parts.length === 3) {
+		const [unit1, per, unit2] = parts.map(s => s.toLowerCase().trim());
+		if (['/', 'per'].includes(per.trim())) {
+			return { unit1, unit2 };
+		}
+	}
+
+	return undefined;
+
+}
+// TODO: add the next units :
+// - Temperature
+// - Area
+
 const units = { ...timeUnits, ...lengthUnits, ...sizeUnits, ...volumeUnits };
 export { timeUnits, lengthUnits, sizeUnits, volumeUnits, units };

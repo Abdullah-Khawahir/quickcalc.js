@@ -9,45 +9,22 @@ export function syntaxToken(input) { // TODO: Test
 	if (input.length === 0) {
 		return []
 	}
+	const allUnits = Object.keys(units)
 	const keywords = [
 		'to',
-		...Object.keys(units),
+		...allUnits,
 		"**",				// WARN: the order matters here
 		..."()*/+-%",
 	]
 	const numberPattern = '\\d+\\.\\d+'
+	const unitPattern = allUnits.join('|')
+	const compoundUnitSeparator = ['/', 'per'].join('|')
 	// NOTE: this next line is for some JavaScript bullshit to escape regex symbols like mapping + to \+  
 	const regexPattern = keywords.map(keyword => keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-	const regex = new RegExp(`(${regexPattern}|${numberPattern})`, 'g');
-
-	let tokens = input.split(regex).map(token => token.trim()).filter(Boolean)
+	const regex = new RegExp(`((?:${unitPattern})(?:${compoundUnitSeparator})(?:${unitPattern})|${regexPattern}|${numberPattern})`, 'g');
+	let tokens = input.split(regex).map(token => token?.trim()).filter(Boolean)
 
 	return tokens
-	// NOTE: this trasforms the units from '1m' to '1 * m' which evalutates to '1000'
-	//
-	// let keywordsIndex = []
-	// for (let i = 0; i < tokens.length; i++) {
-	// 	const token = tokens[i];
-	// 	if (Object.keys(units).includes(token)) {
-	// 		keywordsIndex.push(i)
-	// 	}
-	// }
-	// const operators = [...'+-*/%', '**'];
-	// for (let i = 0; i < tokens.length; i++) {
-	// 	const prev = tokens[i - 1];
-	// 	const next = tokens[i + 1];
-	//
-	// 	if (!operators.includes(tokens[i])) {
-	// 		if (i > 0 && !operators.includes(prev)) {
-	// 			tokens.splice(i, 0, '*');
-	// 			i++;
-	// 		}
-	// 		if (i < tokens.length - 1 && !operators.includes(next)) {
-	// 			tokens.splice(i + 1, 0, '*');
-	// 			i++;
-	// 		}
-	// 	}
-	// }
 }
 
 
@@ -60,6 +37,7 @@ export function syntaxToken(input) { // TODO: Test
  **/
 export function evaluate(input) {
 	const tokens = syntaxToken(input)
+
 	if (tokens.includes('to')) {
 		// 1 meter to cm = 100 cm | 1m to cm
 		let [value, fromUnit, _, toUnit] = tokens
@@ -104,7 +82,6 @@ export function evaluate(input) {
 	return ScopedJsEval(input, units)
 }
 
-// NOTE: copied from stackoverflow https://stackoverflow.com/a/75587774
 function ScopedJsEval(src, ctx) {
 	let now_date = new Date()
 	let yesterday_date = new Date()
@@ -117,6 +94,7 @@ function ScopedJsEval(src, ctx) {
 	let tomorrow = tomorrow_date.getMilliseconds()
 
 
+	// NOTE: copied from stackoverflow https://stackoverflow.com/a/75587774
 	const scope = Object.assign(Object.keys(globalThis)
 		.reduce((acc, k) => {
 			acc[k] = undefined; return acc
