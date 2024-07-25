@@ -1,2 +1,2 @@
 # quickcalc.js
-a tool is aimed to provide a better UX when typing data which rely on calculations by calculates them in place
+A tool aimed at providing a better UX when typing data by calculating it in place.
