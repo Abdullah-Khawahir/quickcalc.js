@@ -1,30 +1,36 @@
 import { evaluate } from './evaluate.js'
 /**
- * @param {Event} evnt name
- * @param {eventType} the name of the event which is used tp listen e.g. click, change or input etc...
- * @param {string} suffix is the char which enable the handling and parsing
- * @param {string} trigger is charcheter which tells the function to calculate
- * 					expression
+ * @param {HTMLInputElement } htmlElement
  * @param {(err:Error)=>void} onError 
+ * @returns {string | undefined} the result or undefined otherwise
+ * @throws mulitple erros 
  * */
-export function bind(evnt, eventType, suffix, trigger, onError) {
-	if (evnt.type !== eventType) {
-		return;
-	}
-	const input = evnt.target?.value
+export function evaluateElement(htmlElement, onError) {
+	const input = htmlElement?.value
 	if (!input) {
-		return;
+		return undefined;
 	}
-	if (!input.startsWith(suffix)) {
-		return;
+	try {
+		const evaluation = evaluate(input)
+		if (evaluation) return evaluation;
+	} catch (err) {
+		if (onError !== undefined) onError(err)
 	}
-	if (evnt.data === trigger) {
-		try {
-			const evaluation = evaluate(input.slice(suffix.length, input.length - trigger.length))
-			if (evaluation)
-				evnt.target.value = evaluation
-		} catch (err) {
-			if (onError !== undefined) onError(err)
-		}
+	return undefined;
+}
+
+/**
+ * @param {HTMLInputElement } element name
+ * @param {(err:Error)=>void} onError 
+ * @returns {string | undefined} the result or undefined otherwise
+ * @throws mulitple erros 
+ * */
+export function evaluateString(input, onError) {
+	try {
+		const evaluation = evaluate(input)
+		if (evaluation) return evaluation
+	} catch (err) {
+		if (onError !== undefined) onError(err)
 	}
+	return undefined;
 }

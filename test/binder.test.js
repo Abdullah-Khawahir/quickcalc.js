@@ -6,7 +6,8 @@ test("", () => {
 	const tests = [
 		tCase('1 * 2', 2),
 		tCase('1h to min', '60 min'),
-		tCase('25 km/s to m/s', '25000 m/s')
+		tCase('25 km/s to m/s', '25000 m/s'),
+		tCase('(10 * 10)/3', 100 / 3)
 	]
 	tests.forEach((test) => {
 		const { value, exp } = test
@@ -15,5 +16,6 @@ test("", () => {
 
 
 	expect(() => evaluate('20km to h')).toThrowError("the units are not the same category")
-	expect(evaluate('now')).toBe((new Date()).toLocaleString())
+	expect(evaluate('now')).toBe((new Date()).toLocaleDateString())
+
 })

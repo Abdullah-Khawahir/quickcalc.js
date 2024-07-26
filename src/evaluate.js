@@ -27,7 +27,14 @@ export function syntaxToken(input) { // TODO: Test
 	return tokens
 }
 
-
+/**
+ * @param {string} string 
+ * @return {boolean} true if the string is a mathematical expression, false otherwise
+ **/
+function isMathExpression(string) {
+	const mathExpressionPattern = /^[0-9+\-*/().\s]+$/;
+	return mathExpressionPattern.test(string);
+}
 /**
  * @param {string} input 
  * @returns {string} the evaluated value
@@ -37,14 +44,20 @@ export function syntaxToken(input) { // TODO: Test
  **/
 export function evaluate(input) {
 	const tokens = syntaxToken(input)
-
 	if (tokens.includes('to')) {
 		// 1 meter to cm = 100 cm | 1m to cm
-		let [value, fromUnit, _, toUnit] = tokens
-		if (!Number.isInteger(+value)) {
-			value = +units[value]
+		let toKeywordIndex = tokens.indexOf('to')
+		let [value, fromUnit, _, toUnit] = tokens.slice(toKeywordIndex - 2)
+		let leftOfFromUnit = tokens.slice(0, toKeywordIndex - 1)?.join(' ')
+
+		if (isMathExpression(leftOfFromUnit)) { // if the left of conversion is math expression
+			value = evaluate(leftOfFromUnit)
 		}
-		if (!Number.isInteger(+value)) {
+		if (!isNumber(value)) {
+			value = units[value]
+		}
+
+		if (!isNumber(value)) {
 			throw new Error(`${value} is not a number or a known unit`)
 		}
 
@@ -76,12 +89,14 @@ export function evaluate(input) {
 		// if(tokens.includes('since')) {}
 		let date = new Date()
 		date.setMilliseconds(ScopedJsEval(input, timeUnits))
-		return date.toLocaleString()
+		return date.toLocaleDateString()
 	}
 
 	return ScopedJsEval(input, units)
 }
-
+function isNumber(value) {
+	return Number(value) !== NaN
+}
 function ScopedJsEval(src, ctx) {
 	let now_date = new Date()
 	let yesterday_date = new Date()

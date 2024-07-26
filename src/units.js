@@ -136,29 +136,69 @@ const volumeUnits = {
 	ft3: cubic_foot,
 	yd3: cubic_yard,
 };
+const temprtureConversionFunctions = {
+	/**
+	 * converts the kelvin to kelvin
+	 * @param {number} kelvin 
+	 **/
+	kelvin: (kelvin) => kelvin,
+	/**
+	 * converts the celsius to kelvin
+	 * @param {number} celsius 
+	 **/
+	CelsiusToKelvin: (celsius) => {
+		return (celsius + 273.15)
+	},
+	/**
+	 * converts the fahrenheit to kelvin
+	 * @param {number} fahrenheit 
+	 **/
+	FahrenheitToKelvin: (fahrenheit) => {
+		return (((fahrenheit - 32) * 5 / 9) + 273.15)
+	},
+
+
+	/**
+	 * converts the fahrenheit to kelvin
+	 * @param {number} fahrenheit 
+	 **/
+	KelvinToFahrenheit: (kelvin) => {
+		return ((kelvin - 273.15) * 9 / 5) + 32
+	},
+	KelvinToCelsius: (kelvin) => {
+		return (kelvin - 273.15)
+	},
+}
+
+const temprtureUnitsToKelvin = {
+	Kelvin: temprtureConversionFunctions.kelvin,
+	Celsius: temprtureConversionFunctions.CelsiusToKelvin,
+	Fahrenheit: temprtureConversionFunctions.FahrenheitToKelvin,
+
+	K: temprtureConversionFunctions.kelvin,
+	C: temprtureConversionFunctions.CelsiusToKelvin,
+	F: temprtureConversionFunctions.FahrenheitToKelvin,
+}
+export function getConvertingFunction(toUnit) {
+	return {
+		Kelvin: temprtureConversionFunctions.kelvin,
+		K: temprtureConversionFunctions.kelvin,
+
+		Celsius: temprtureConversionFunctions.KelvinToCelsius,
+		C: temprtureConversionFunctions.KelvinToCelsius,
+
+		Fahrenheit: temprtureConversionFunctions.KelvinToFahrenheit,
+		F: temprtureConversionFunctions.KelvinToFahrenheit,
+	}[toUnit] ?? console.error("failed to getConvertingFunction")
+}
 
 /**
  * @param {string} unit1 
  * @param {string} unit2 
  * @returns {boolean}
  * */
-export function areSameCatagory(unit1, unit2) {
-	const categories = [timeUnits, lengthUnits, sizeUnits, volumeUnits]
-	for (let i = 0; i < categories.length; i++) {
-		const category = categories[i];
-		if (category[unit1] && category[unit2]) {
-			return true
-		}
-	}
-	return false
-}
-/**
- * @param {string} unit1 
- * @param {string} unit2 
- * @returns {boolean}
- * */
 export function areTimeUnits(unit1, unit2) {
-	return timeUnits[unit1] && timeUnits[unit2]
+	return (unit1 in timeUnits) && (unit2 in timeUnits)
 }
 /**
  * @param {string} unit
@@ -174,11 +214,30 @@ export function breakCompoundUnit(unit) {
 	}
 
 	return undefined;
-
 }
 // TODO: add the next units :
 // - Temperature
 // - Area
 
-const units = { ...timeUnits, ...lengthUnits, ...sizeUnits, ...volumeUnits };
-export { timeUnits, lengthUnits, sizeUnits, volumeUnits, units };
+
+/**
+ * @param {string} unit1 
+ * @param {string} unit2 
+ * @returns {boolean}
+ * */
+export function areSameCatagory(unit1, unit2) {
+	const categories = [timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin]
+	for (let i = 0; i < categories.length; i++) {
+		const category = categories[i];
+		if ((unit1 in category) && (unit2 in category)) {
+			return true
+		}
+	}
+	return false
+}
+export function isTemprtureUnit(unit) {
+	return unit in temprtureUnitsToKelvin
+	return convertedValue
+}
+const units = { ...timeUnits, ...lengthUnits, ...sizeUnits, ...volumeUnits, ...temprtureUnitsToKelvin };
+export { timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin, units };

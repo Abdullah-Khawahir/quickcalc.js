@@ -1,1 +1,1 @@
-export { bind } from './binder.js'
+export { evaluateElement } from './binder.js'
