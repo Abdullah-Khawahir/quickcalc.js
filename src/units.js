@@ -212,21 +212,47 @@ export function breakCompoundUnit(unit) {
 			return { unit1, unit2 };
 		}
 	}
+	if (parts.length > 3) {
+		const perIndex = parts.findIndex((item) => ['/', 'per'].includes(item))
+		if (perIndex != -1) {
+			const [unit1, per, unit2] = parts.slice(perIndex - 1)
+			if (['/', 'per'].includes(per.trim())) {
+				return { unit1, unit2 };
+			}
+		}
+	}
 
 	return undefined;
 }
-// TODO: add the next units :
-// - Temperature
-// - Area
 
 
+const areaUnits = (() => {
+	let areaUnitsMap = {}
+	for (const key in lengthUnits) {
+		areaUnitsMap[key + '2'] = lengthUnits[key] * lengthUnits[key]
+	}
+	return areaUnitsMap
+})()
+/**
+ *
+ * @param {string} unit1 
+ * @param {string} unit2
+ */
+export function areAreaUnits(unit1, unit2) {
+	if (unit1.endsWith('2') && unit2.endsWith('2')) {
+		if (unit1.slice(-1) in lengthUnits && unit2.slice(-1) in lengthUnits) {
+			return true
+		}
+	}
+	return false
+}
 /**
  * @param {string} unit1 
  * @param {string} unit2 
  * @returns {boolean}
  * */
 export function areSameCatagory(unit1, unit2) {
-	const categories = [timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin]
+	const categories = [timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin, areaUnits]
 	for (let i = 0; i < categories.length; i++) {
 		const category = categories[i];
 		if ((unit1 in category) && (unit2 in category)) {
@@ -237,7 +263,8 @@ export function areSameCatagory(unit1, unit2) {
 }
 export function isTemprtureUnit(unit) {
 	return unit in temprtureUnitsToKelvin
-	return convertedValue
 }
-const units = { ...timeUnits, ...lengthUnits, ...sizeUnits, ...volumeUnits, ...temprtureUnitsToKelvin };
-export { timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin, units };
+
+// IMPORTANT: order matters here for areaUnits and length units and areaUnits must be before lengthUnits
+const units = { ...timeUnits, ...areaUnits, ...lengthUnits, ...sizeUnits, ...volumeUnits, ...temprtureUnitsToKelvin };
+export { timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin, areaUnits, units };

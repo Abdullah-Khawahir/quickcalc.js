@@ -20,8 +20,8 @@ export function syntaxToken(input) { // TODO: Test
 	const unitPattern = allUnits.join('|')
 	const compoundUnitSeparator = ['/', 'per'].join('|')
 	// NOTE: this next line is for some JavaScript bullshit to escape regex symbols like mapping + to \+  
-	const regexPattern = keywords.map(keyword => keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-	const regex = new RegExp(`((?:${unitPattern})(?:${compoundUnitSeparator})(?:${unitPattern})|${regexPattern}|${numberPattern})`, 'g');
+	const keywordPattern = keywords.map(keyword => keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+	const regex = new RegExp(`((?:${unitPattern})(?:${compoundUnitSeparator})(?:${unitPattern})|${keywordPattern}|${numberPattern})`, 'g');
 	let tokens = input.split(regex).map(token => token?.trim()).filter(Boolean)
 
 	return tokens
