@@ -1,9 +1,10 @@
 import { syntaxToken } from './../src/evaluate.js'
-test("", () => {
+
+test("syntax Token function", () => {
 	const tCase = (inputCase) => {
 		return {
 			input: inputCase,
-			expected: [...inputCase.split(' ')],
+			expected: [...inputCase.split(' ').filter(Boolean)],
 		}
 	}
 	const cases = [
@@ -14,6 +15,8 @@ test("", () => {
 		tCase("now * day * m2"),
 		tCase("44 ** m"),
 
+		tCase("( 44 ** m ) m to cm"),
+		tCase("( 44 ** 2 ) km/s to cm/minute"),
 	]
 
 	cases.forEach(test => {
