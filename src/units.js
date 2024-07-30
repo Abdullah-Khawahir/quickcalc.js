@@ -119,18 +119,18 @@ const sizeUnits = {
 
 const milliliter = 1;
 const liter = milliliter * 1000;
-const cubic_centimeter = milliliter; // 1 milliliter
+const cubic_centimeter = milliliter;
 const cubic_meter = liter * 1000;
-const teaspoon = milliliter * 4.92892; // 1 teaspoon = 4.92892 milliliters
-const tablespoon = milliliter * 14.7868; // 1 tablespoon = 14.7868 milliliters
-const fluid_ounce = milliliter * 29.5735; // 1 fluid ounce = 29.5735 milliliters
-const cup = milliliter * 240; // 1 cup = 240 milliliters
-const pint = milliliter * 473.176; // 1 pint = 473.176 milliliters
-const quart = milliliter * 946.353; // 1 quart = 946.353 milliliters
-const gallon = milliliter * 3785.41; // 1 gallon = 3785.41 milliliters
-const cubic_inch = milliliter * 16.3871; // 1 cubic inch = 16.3871 milliliters
-const cubic_foot = milliliter * 28316.8; // 1 cubic foot = 28316.8 milliliters
-const cubic_yard = milliliter * 764555; // 1 cubic yard = 764555 milliliters
+const teaspoon = milliliter * 4.92892;
+const tablespoon = milliliter * 14.7868;
+const fluid_ounce = milliliter * 29.5735;
+const cup = milliliter * 240;
+const pint = milliliter * 473.176;
+const quart = milliliter * 946.353;
+const gallon = milliliter * 3785.41;
+const cubic_inch = milliliter * 16.3871;
+const cubic_foot = milliliter * 28316.8;
+const cubic_yard = milliliter * 764555;
 
 const volumeUnits = {
 	milliliters: milliliter,
@@ -178,6 +178,36 @@ const volumeUnits = {
 	ft3: cubic_foot,
 	yd3: cubic_yard,
 };
+const milligram = 1;
+const gram = milligram * 1000;
+const kilogram = gram * 1000;
+const microgram = milligram / 1000;
+const pound = kilogram * 2.20462;
+const ounce = pound / 16;
+const massUnits = {
+	micrograms: microgram,
+	milligrams: milligram,
+	grams: gram,
+	kilograms: kilogram,
+	pounds: pound,
+	ounces: ounce,
+
+	microgram,
+	milligram,
+	gram,
+	kilogram,
+	pound,
+	ounce,
+
+	mcg: microgram,
+	mg: milligram,
+	g: gram,
+	kg: kilogram,
+	lb: pound,
+	oz: ounce
+}
+
+
 const temprtureConversionFunctions = {
 	/**
 	 * converts the kelvin to kelvin
@@ -275,6 +305,9 @@ const areaUnits = (() => {
 	}
 	return areaUnitsMap
 })()
+
+
+const allCategories = [timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin, areaUnits, massUnits]
 /**
  *
  * @param {string} unit1 
@@ -294,7 +327,7 @@ export function areAreaUnits(unit1, unit2) {
  * @returns {boolean}
  * */
 export function areSameCatagory(unit1, unit2) {
-	const categories = [timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin, areaUnits]
+	const categories = allCategories
 	for (let i = 0; i < categories.length; i++) {
 		const category = categories[i];
 		if ((unit1 in category) && (unit2 in category)) {
@@ -306,7 +339,17 @@ export function areSameCatagory(unit1, unit2) {
 export function isTemprtureUnit(unit) {
 	return unit in temprtureUnitsToKelvin
 }
-
+export function getUnitCatagory(unit) {
+	const categories = allCategories
+	for (let i = 0; i < categories.length; i++) {
+		const category = categories[i];
+		if ((unit in category)) {
+			return category
+		}
+	}
+	return undefined
+}
 // IMPORTANT: order matters here for areaUnits and length units and areaUnits must be before lengthUnits
-const units = { ...timeUnits, ...areaUnits, ...lengthUnits, ...sizeUnits, ...volumeUnits, ...temprtureUnitsToKelvin };
+const units = { ...timeUnits, ...areaUnits, ...lengthUnits, ...sizeUnits, ...volumeUnits, ...temprtureUnitsToKelvin, ...massUnits };
+
 export { timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin, areaUnits, units };
