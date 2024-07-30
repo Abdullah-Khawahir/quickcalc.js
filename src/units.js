@@ -7,6 +7,15 @@ const week = day * 7;
 const year = (day * 365) + (hour * 6); // 365 days and 6 hours
 
 const timeUnits = {
+
+	milliseconds: millisecond,
+	seconds: second,
+	minutes: minute,
+	hours: hour,
+	days: day,
+	weeks: week,
+	years: year,
+
 	millisecond,
 	second,
 	minute,
@@ -38,6 +47,14 @@ const yard = foot * 3;
 const mile = kilometer * 1.609344;
 
 const lengthUnits = {
+	millimeters: millimeter,
+	centimeters: centimeter,
+	meters: meter,
+	kilometers: kilometer,
+	inches: inch,
+	yards: yard,
+	miles: mile,
+
 	millimeter,
 	centimeter,
 	meter,
@@ -68,6 +85,16 @@ const zettabyte = exabyte * 1024;
 const yottabyte = zettabyte * 1024;
 
 const sizeUnits = {
+	bytes: byte,
+	kilobytes: kilobyte,
+	megabytes: megabyte,
+	gigabytes: gigabyte,
+	terabytes: terabyte,
+	petabytes: petabyte,
+	exabytes: exabyte,
+	zettabytes: zettabyte,
+	yottabytes: yottabyte,
+
 	byte,
 	kilobyte,
 	megabyte,
@@ -106,6 +133,21 @@ const cubic_foot = milliliter * 28316.8; // 1 cubic foot = 28316.8 milliliters
 const cubic_yard = milliliter * 764555; // 1 cubic yard = 764555 milliliters
 
 const volumeUnits = {
+	milliliters: milliliter,
+	liters: liter,
+	cubic_centimeters: cubic_centimeter,
+	cubic_meters: cubic_meter,
+	teaspoons: teaspoon,
+	tablespoons: tablespoon,
+	fluid_ounces: fluid_ounce,
+	cups: cup,
+	pints: pint,
+	quarts: quart,
+	gallons: gallon,
+	cubic_inchs: cubic_inch,
+	cubic_foots: cubic_foot,
+	cubic_yards: cubic_yard,
+
 	milliliter,
 	liter,
 	cubic_centimeter,
