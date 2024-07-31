@@ -17,6 +17,8 @@ test("syntax Token function", () => {
 
 		tCase("( 44 ** m ) m to cm"),
 		tCase("( 44 ** 2 ) km/s to cm/minute"),
+		tCase(".1 km/s to cm/minute"),
+		tCase(".1 * 10 * m * .2 * 10 * 3 * m/s * 1 / s"),
 	]
 
 	cases.forEach(test => {
