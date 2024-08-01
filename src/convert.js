@@ -8,14 +8,19 @@ import { units, areSameCatagory, getUnitCatagory, breakCompoundUnit, isTemprture
  * @throws if the units are not the same
  */
 export function convert(value, fromUnit, toUnit) {
-	const fromCompoundUnit = breakCompoundUnit(fromUnit)
-	const toCompoundUnit = breakCompoundUnit(toUnit)
-	if (fromCompoundUnit !== undefined && toCompoundUnit !== undefined) {
-		const unit1Catagory = getUnitCatagory(fromCompoundUnit.unit1)
-		const unit2Catagory = getUnitCatagory(fromCompoundUnit.unit2)
+	const fromCompUnit = breakCompoundUnit(fromUnit)
+	const toCompUnit = breakCompoundUnit(toUnit)
+	const isCompundUnit = fromCompUnit !== undefined && toCompUnit !== undefined;
+	if (isCompundUnit) {
+		const baseFromUnitCategory = getUnitCatagory(fromCompUnit.baseUnit)
+		const divisorFromUnitCategory = getUnitCatagory(fromCompUnit.divisorUnit)
 
-		const baseValue = value * (unit1Catagory[fromCompoundUnit.unit1] / unit2Catagory[fromCompoundUnit.unit2])
-		const converted = baseValue / (unit1Catagory[toCompoundUnit.unit1] / unit2Catagory[toCompoundUnit.unit2])
+		if (!areSameCatagory(fromCompUnit.baseUnit, toCompUnit.baseUnit) || !areSameCatagory(fromCompUnit.divisorUnit, toCompUnit.divisorUnit)) {
+			throw new Error(`the units are not the same category: ${fromUnit} , ${toUnit}`)
+		}
+
+		const baseValue = value * (baseFromUnitCategory[fromCompUnit.baseUnit] / divisorFromUnitCategory[fromCompUnit.divisorUnit])
+		const converted = baseValue / (baseFromUnitCategory[toCompUnit.baseUnit] / divisorFromUnitCategory[toCompUnit.divisorUnit])
 		return converted
 	}
 
