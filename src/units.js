@@ -306,8 +306,73 @@ const areaUnits = (() => {
 	return areaUnitsMap
 })()
 
+const watt = 1;
+const kilowatt = watt * 1000;
+const megawatt = kilowatt * 1000;
+const gigawatt = megawatt * 1000;
+const milliwatt = watt / 1000;
+const microwatt = milliwatt / 1000;
+const horsepower = watt * 745.7;
+const mechanicalHorsepower = watt * 745.7;
+const metricHorsepower = watt * 735.5;
+const footPoundPerSecond = watt * 1.35582;
+const btuPerHour = watt * 0.29307107;
+const ergPerSecond = watt / 10000000;
+const caloriePerSecond = watt / 4.184;
+const voltAmpere = watt;
+const kilovoltAmpere = kilowatt;
+const megavoltAmpere = megawatt;
+const gigavoltAmpere = gigawatt;
+const lumenPerSecond = watt;
+const thermochemicalHorsepower = watt * 735.5;
+const electricalHorsepower = watt * 746;
+const boilerHorsepower = watt * 9810;
 
-const allCategories = [timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin, areaUnits, massUnits]
+const powerUnits = {
+	watt,
+	kilowatt,
+	megawatt,
+	gigawatt,
+	milliwatt,
+	microwatt,
+	horsepower,
+	mechanicalHorsepower,
+	metricHorsepower,
+	footPoundPerSecond,
+	btuPerHour,
+	ergPerSecond,
+	caloriePerSecond,
+	voltAmpere,
+	kilovoltAmpere,
+	megavoltAmpere,
+	gigavoltAmpere,
+	lumenPerSecond,
+	thermochemicalHorsepower,
+	electricalHorsepower,
+	boilerHorsepower,
+
+	W: watt,
+	kW: kilowatt,
+	MW: megawatt,
+	GW: gigawatt,
+	mW: milliwatt,
+	µW: microwatt,
+	hp: horsepower,
+	ftLbPerS: footPoundPerSecond,
+	BTUPerH: btuPerHour,
+	ergPerS: ergPerSecond,
+	calPerS: caloriePerSecond,
+	VA: voltAmpere,
+	kVA: kilovoltAmpere,
+	MVA: megavoltAmpere,
+	GVA: gigavoltAmpere,
+	lmPerS: lumenPerSecond,
+	thp: thermochemicalHorsepower,
+	ehp: electricalHorsepower,
+	bhp: boilerHorsepower
+};
+
+const allCategories = [timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin, areaUnits, massUnits, powerUnits]
 /**
  *
  * @param {string} unit1 
