@@ -274,14 +274,14 @@ export function areTimeUnits(unit1, unit2) {
 }
 /**
  * @param {string} unit
- * @returns { { unit1:string, unit2:string } | undefined  } retruns the units else return undefined 
+ * @returns { { baseUnit:string, divisorUnit:string } | undefined  } retruns the units else return undefined 
  **/
 export function breakCompoundUnit(unit) {
 	const parts = unit.split(/(per|\/)/i).filter(Boolean)
 	if (parts.length === 3) {
 		const [unit1, per, unit2] = parts.map(s => s.trim());
 		if (['/', 'per'].includes(per.trim())) {
-			return { unit1, unit2 };
+			return { baseUnit: unit1, divisorUnit: unit2 };
 		}
 	}
 	if (parts.length > 3) {
@@ -289,7 +289,7 @@ export function breakCompoundUnit(unit) {
 		if (perIndex != -1) {
 			const [unit1, per, unit2] = parts.slice(perIndex - 1)
 			if (['/', 'per'].includes(per.trim())) {
-				return { unit1, unit2 };
+				return { baseUnit: unit1, divisorUnit: unit2 };
 			}
 		}
 	}
@@ -371,8 +371,189 @@ const powerUnits = {
 	ehp: electricalHorsepower,
 	bhp: boilerHorsepower
 };
+const ampere = 1;
+const kiloampere = ampere * 1000;
+const megaampere = kiloampere * 1000;
+const gigaampere = megaampere * 1000;
+const milliampere = ampere / 1000;
+const microampere = milliampere / 1000;
 
-const allCategories = [timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin, areaUnits, massUnits, powerUnits]
+const currentUnits = {
+	amperes: ampere,
+	kiloamperes: kiloampere,
+	megaamperes: megaampere,
+	gigaamperes: gigaampere,
+	milliamperes: milliampere,
+	microamperes: microampere,
+
+	ampere,
+	kiloampere,
+	megaampere,
+	gigaampere,
+	milliampere,
+	microampere,
+
+	A: ampere,
+	kA: kiloampere,
+	MA: megaampere,
+	GA: gigaampere,
+	mA: milliampere,
+	µA: microampere
+};
+
+const pascal = 1;
+const kilopascal = pascal * 1000;
+const megapascal = kilopascal * 1000;
+const gigapascal = megapascal * 1000;
+const millipascal = pascal / 1000;
+const micropascal = millipascal / 1000;
+const bar = pascal * 100000;
+const millibar = bar / 1000;
+const atmosphere = pascal * 101325;
+const torr = pascal * 133.322;
+const psi = pascal * 6894.76;
+
+const pressureUnits = {
+	pascals: pascal,
+	kilopascals: kilopascal,
+	megapascals: megapascal,
+	gigapascals: gigapascal,
+	millipascals: millipascal,
+	micropascals: micropascal,
+	bars: bar,
+	millibars: millibar,
+	atmospheres: atmosphere,
+	torrs: torr,
+	psi: psi,
+
+	pascal,
+	kilopascal,
+	megapascal,
+	gigapascal,
+	millipascal,
+	micropascal,
+	bar,
+	millibar,
+	atmosphere,
+	torr,
+	psi,
+
+	Pa: pascal,
+	kPa: kilopascal,
+	MPa: megapascal,
+	GPa: gigapascal,
+	mPa: millipascal,
+	µPa: micropascal,
+	bar: bar,
+	mbar: millibar,
+	atm: atmosphere,
+	Torr: torr,
+	psi: psi
+};
+const newton = 1;
+const kilonewton = newton * 1000;
+const megnewton = kilonewton * 1000;
+const poundForce = newton * 4.44822;
+const dyne = newton / 10e5;
+
+const forceUnits = {
+	newtons: newton,
+	kilonewtons: kilonewton,
+	megnewtons: megnewton,
+	poundForces: poundForce,
+	dynes: dyne,
+
+	newton,
+	kilonewton,
+	megnewton,
+	poundForce,
+	dyne,
+
+	N: newton,
+	kN: kilonewton,
+	MN: megnewton,
+	lbf: poundForce,
+	dyn: dyne
+};
+
+const hertz = 1;
+const kilohertz = hertz * 1000;
+const megahertz = kilohertz * 1000;
+const gigahertz = megahertz * 1000;
+const millihertz = hertz / 1000;
+const microhertz = millihertz / 1000;
+
+const frequencyUnits = {
+	hertz: hertz,
+	kilohertz: kilohertz,
+	megahertz: megahertz,
+	gigahertz: gigahertz,
+	millihertz: millihertz,
+	microhertz: microhertz,
+
+	hertz,
+	kilohertz,
+	megahertz,
+	gigahertz,
+	millihertz,
+	microhertz,
+
+	Hz: hertz,
+	kHz: kilohertz,
+	MHz: megahertz,
+	GHz: gigahertz,
+	mHz: millihertz,
+	µHz: microhertz
+};
+
+const joule = 1;
+const kilojoule = joule * 1000;
+const megajoule = kilojoule * 1000;
+const gigajoule = megajoule * 1000;
+const calorie = joule * 4.184;
+const kilocalorie = calorie * 1000;
+const britishThermalUnit = joule * 1055.06;
+const electronvolt = joule * 1.60218e-19;
+const kilowattHour = joule * 3.6e6;
+
+const energyUnits = {
+	joules: joule,
+	kilojoules: kilojoule,
+	megajoules: megajoule,
+	gigajoules: gigajoule,
+	calories: calorie,
+	kilocalories: kilocalorie,
+	britishThermalUnits: britishThermalUnit,
+	electronvolts: electronvolt,
+	kilowattHours: kilowattHour,
+
+	joule,
+	kilojoule,
+	megajoule,
+	gigajoule,
+	calorie,
+	kilocalorie,
+	britishThermalUnit,
+	electronvolt,
+	kilowattHour,
+
+	J: joule,
+	kJ: kilojoule,
+	MJ: megajoule,
+	GJ: gigajoule,
+	cal: calorie,
+	kcal: kilocalorie,
+	BTU: britishThermalUnit,
+	eV: electronvolt,
+	kWh: kilowattHour
+};
+
+const allCategories = [
+	timeUnits, lengthUnits, sizeUnits, volumeUnits,
+	temprtureUnitsToKelvin, areaUnits, massUnits,
+	powerUnits, currentUnits, pressureUnits, forceUnits,
+	frequencyUnits, energyUnits,
+]
 /**
  *
  * @param {string} unit1 
@@ -386,6 +567,24 @@ export function areAreaUnits(unit1, unit2) {
 	}
 	return false
 }
+
+/**
+ *
+ * @param {string} unit 
+ *
+ * @returns {{unitName:string , exponent:Number }}
+ */
+export function getExponantialUnits(unit) {
+	const [_, unitName, exponent] = unit.match(/([a-zA-z]+)(\d+$)/)
+	if (unitName && +exponent) {
+		return {
+			unitName,
+			exponent: +exponent
+		}
+	}
+	return undefined
+}
+
 /**
  * @param {string} unit1 
  * @param {string} unit2 
@@ -404,17 +603,29 @@ export function areSameCatagory(unit1, unit2) {
 export function isTemprtureUnit(unit) {
 	return unit in temprtureUnitsToKelvin
 }
+/**
+ *
+ * @param {string} unit 
+ * @returns {timeUnits | lengthUnits | sizeUnits | volumeUnits | temprtureUnitsToKelvin | areaUnits | powerUnits| currentUnits}
+ */
 export function getUnitCatagory(unit) {
 	const categories = allCategories
 	for (let i = 0; i < categories.length; i++) {
-		const category = categories[i];
-		if ((unit in category)) {
-			return category
+		if (unit in categories[i]) {
+			return categories[i]
 		}
 	}
 	return undefined
 }
-// IMPORTANT: order matters here for areaUnits and length units and areaUnits must be before lengthUnits
-const units = { ...timeUnits, ...areaUnits, ...lengthUnits, ...sizeUnits, ...volumeUnits, ...temprtureUnitsToKelvin, ...massUnits };
 
-export { timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin, areaUnits, units };
+// IMPORTANT: order matters here for areaUnits and length units and areaUnits must be before lengthUnits
+const units = {
+	...timeUnits, ...areaUnits, ...lengthUnits, ...sizeUnits, ...volumeUnits,
+	...temprtureUnitsToKelvin, ...massUnits, ...powerUnits, ...currentUnits,
+	...pressureUnits, ...forceUnits, ...frequencyUnits, ...energyUnits,
+};
+
+export {
+	timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin, areaUnits, powerUnits, currentUnits, pressureUnits, forceUnits,
+	frequencyUnits, energyUnits, units
+};
