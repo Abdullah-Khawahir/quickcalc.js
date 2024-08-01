@@ -279,7 +279,7 @@ export function areTimeUnits(unit1, unit2) {
 export function breakCompoundUnit(unit) {
 	const parts = unit.split(/(per|\/)/i).filter(Boolean)
 	if (parts.length === 3) {
-		const [unit1, per, unit2] = parts.map(s => s.toLowerCase().trim());
+		const [unit1, per, unit2] = parts.map(s => s.trim());
 		if (['/', 'per'].includes(per.trim())) {
 			return { unit1, unit2 };
 		}
