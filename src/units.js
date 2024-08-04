@@ -575,7 +575,7 @@ export function areAreaUnits(unit1, unit2) {
  * @returns {{unitName:string , exponent:Number }}
  */
 export function getExponantialUnits(unit) {
-	const [_, unitName, exponent] = unit.match(/([a-zA-z]+)(\d+$)/)
+	const [_, unitName, exponent] = unit.match(/([a-zA-z]+)(\d+$)/) || []
 	if (unitName && +exponent) {
 		return {
 			unitName,
