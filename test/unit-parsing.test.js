@@ -1,5 +1,37 @@
-import { breakCompoundUnit, getExponantialUnits } from "../src/units";
-
+import { _breakCompoundUnit, _getExponantialUnits, parseUnit } from "../src/unit-parsing.js";
+function c(unit, upper, uexp, lower, lexp) {
+	return {
+		base: {
+			name: upper,
+			exponent: +uexp
+		},
+		divisor: {
+			name: lower,
+			exponent: +lexp
+		},
+		givien: unit
+	}
+}
+const testCases = [
+	c("km/s", 'km', 1, 's', 1),
+	c("km/s2", 'km', 1, 's', 2),
+	c("km2/s", 'km', 2, 's', 1),
+	c("km2/s2", 'km', 2, 's', 2),
+	c("mm4/s2", 'mm', 4, 's', 2),
+	c("mm4", 'mm', 4, '1', 1),
+	c("m4", 'm', 4, '1', 1),
+	c("m", 'm', 1, '1', 1),
+]
+testCases.forEach(t => {
+	const got = parseUnit(t.givien);
+	const expected = { base: t.base, divisor: t.divisor };
+	test(`
+Input: ${t.givien}
+Got: ${got.base.name + got.base.exponent + '/' + got.divisor.name + got.divisor.exponent}
+Expected: ${expected.base.name + expected.base.exponent + '/' + expected.divisor.name + expected.divisor.exponent}`, () => {
+		expect(got).toEqual(expected);
+	});
+});
 
 
 function GECase(unit, name, expo) {
@@ -50,16 +82,12 @@ const getExponantialUnitTestCases = [
 
 getExponantialUnitTestCases.forEach(testCase => {
 	const { unit, name, expo } = testCase
-	const got = getExponantialUnits(unit)
+	const got = _getExponantialUnits(unit)
 	test(`Unit: ${unit} , Expected: ${name + expo} , Got: ${got.unitName + got.exponent}`, () => {
 		expect(got)
 			.toEqual({ unitName: name, exponent: expo })
 	})
 
-	// const bad = getExponantialUnits(name)
-	// test(`Unit: ${name} , Expected: ${undefined} , Got: ${bad}`, () => {
-	// 	expect(name).toEqual(bad)
-	// })
 })
 
 function bcCase(unit, u1, u2) {
@@ -123,10 +151,10 @@ const breakCompundTestCases = [
 ]
 breakCompundTestCases.forEach((testCase) => {
 	const { unit, unit1, unit2 } = testCase
-	const got = breakCompoundUnit(unit)
+	const got = _breakCompoundUnit(unit)
 	test(`input :${unit} ,Expected: ${unit1} , ${unit2} , Got: ${got.baseUnit + '/' + got.divisorUnit} `, () => {
 		expect(got)
-			.toStrictEqual({ unit1, unit2 })
+			.toStrictEqual({ baseUnit: unit1, divisorUnit: unit2 })
 	})
 })
 

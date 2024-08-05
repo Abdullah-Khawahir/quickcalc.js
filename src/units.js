@@ -272,30 +272,6 @@ export function getConvertingFunction(toUnit) {
 export function areTimeUnits(unit1, unit2) {
 	return (unit1 in timeUnits) && (unit2 in timeUnits)
 }
-/**
- * @param {string} unit
- * @returns { { baseUnit:string, divisorUnit:string } | undefined  } retruns the units else return undefined 
- **/
-export function breakCompoundUnit(unit) {
-	const parts = unit.split(/(per|\/)/i).filter(Boolean)
-	if (parts.length === 3) {
-		const [unit1, per, unit2] = parts.map(s => s.trim());
-		if (['/', 'per'].includes(per.trim())) {
-			return { baseUnit: unit1, divisorUnit: unit2 };
-		}
-	}
-	if (parts.length > 3) {
-		const perIndex = parts.findIndex((item) => ['/', 'per'].includes(item))
-		if (perIndex != -1) {
-			const [unit1, per, unit2] = parts.slice(perIndex - 1)
-			if (['/', 'per'].includes(per.trim())) {
-				return { baseUnit: unit1, divisorUnit: unit2 };
-			}
-		}
-	}
-
-	return undefined;
-}
 
 
 const areaUnits = (() => {
@@ -568,22 +544,6 @@ export function areAreaUnits(unit1, unit2) {
 	return false
 }
 
-/**
- *
- * @param {string} unit 
- *
- * @returns {{unitName:string , exponent:Number }}
- */
-export function getExponantialUnits(unit) {
-	const [_, unitName, exponent] = unit.match(/([a-zA-z]+)(\d+$)/) || []
-	if (unitName && +exponent) {
-		return {
-			unitName,
-			exponent: +exponent
-		}
-	}
-	return undefined
-}
 
 /**
  * @param {string} unit1 
@@ -591,6 +551,7 @@ export function getExponantialUnits(unit) {
  * @returns {boolean}
  * */
 export function areSameCatagory(unit1, unit2) {
+	if (unit1 == 1 && unit2 == 1) return true
 	const categories = allCategories
 	for (let i = 0; i < categories.length; i++) {
 		const category = categories[i];
@@ -603,12 +564,22 @@ export function areSameCatagory(unit1, unit2) {
 export function isTemprtureUnit(unit) {
 	return unit in temprtureUnitsToKelvin
 }
+
+// IMPORTANT: order matters here for areaUnits and length units and areaUnits must be before lengthUnits
+const units = {
+	"1": 1,
+	...timeUnits, ...areaUnits, ...lengthUnits, ...sizeUnits, ...volumeUnits,
+	...temprtureUnitsToKelvin, ...massUnits, ...powerUnits, ...currentUnits,
+	...pressureUnits, ...forceUnits, ...frequencyUnits, ...energyUnits,
+};
+
 /**
  *
  * @param {string} unit 
  * @returns {timeUnits | lengthUnits | sizeUnits | volumeUnits | temprtureUnitsToKelvin | areaUnits | powerUnits| currentUnits}
  */
 export function getUnitCatagory(unit) {
+	if (unit == 1) return units
 	const categories = allCategories
 	for (let i = 0; i < categories.length; i++) {
 		if (unit in categories[i]) {
@@ -617,14 +588,6 @@ export function getUnitCatagory(unit) {
 	}
 	return undefined
 }
-
-// IMPORTANT: order matters here for areaUnits and length units and areaUnits must be before lengthUnits
-const units = {
-	...timeUnits, ...areaUnits, ...lengthUnits, ...sizeUnits, ...volumeUnits,
-	...temprtureUnitsToKelvin, ...massUnits, ...powerUnits, ...currentUnits,
-	...pressureUnits, ...forceUnits, ...frequencyUnits, ...energyUnits,
-};
-
 export {
 	timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin, areaUnits, powerUnits, currentUnits, pressureUnits, forceUnits,
 	frequencyUnits, energyUnits, units
