@@ -1,5 +1,77 @@
-const millisecond = 1;
-const second = millisecond * 1000;
+const SIScalers = [
+	{ shortPrefix: 'Q', longPrefix: 'quetta', multiplier: 1e30 },
+	{ shortPrefix: 'R', longPrefix: 'ronna', multiplier: 1e27 },
+	{ shortPrefix: 'Y', longPrefix: 'yotta', multiplier: 1e24 },
+	{ shortPrefix: 'Z', longPrefix: 'zetta', multiplier: 1e21 },
+	{ shortPrefix: 'E', longPrefix: 'exa', multiplier: 1e18 },
+	{ shortPrefix: 'P', longPrefix: 'peta', multiplier: 1e15 },
+	{ shortPrefix: 'T', longPrefix: 'tera', multiplier: 1e12 },
+	{ shortPrefix: 'G', longPrefix: 'giga', multiplier: 1e9 },
+	{ shortPrefix: 'M', longPrefix: 'mega', multiplier: 1e6 },
+	{ shortPrefix: 'k', longPrefix: 'kilo', multiplier: 1e3 },
+	{ shortPrefix: 'h', longPrefix: 'hecto', multiplier: 1e2 },
+	{ shortPrefix: 'da', longPrefix: 'deka', multiplier: 1e1 },
+	{ shortPrefix: '', longPrefix: '', multiplier: 1 },
+	{ shortPrefix: 'd', longPrefix: 'deci', multiplier: 1e-1 },
+	{ shortPrefix: 'c', longPrefix: 'centi', multiplier: 1e-2 },
+	{ shortPrefix: 'm', longPrefix: 'milli', multiplier: 1e-3 },
+	{ shortPrefix: 'μ', longPrefix: 'micro', multiplier: 1e-6 },
+	{ shortPrefix: 'n', longPrefix: 'nano', multiplier: 1e-9 },
+	{ shortPrefix: 'p', longPrefix: 'pico', multiplier: 1e-12 },
+	{ shortPrefix: 'f', longPrefix: 'femto', multiplier: 1e-15 },
+	{ shortPrefix: 'a', longPrefix: 'atto', multiplier: 1e-18 },
+	{ shortPrefix: 'z', longPrefix: 'zepto', multiplier: 1e-21 },
+	{ shortPrefix: 'y', longPrefix: 'yocto', multiplier: 1e-24 },
+	{ shortPrefix: 'r', longPrefix: 'ronto', multiplier: 1e-27 },
+	{ shortPrefix: 'q', longPrefix: 'quecto', multiplier: 1e-30 }
+];
+/**
+ * takes an object of units like meter and adds the SI prefix units ex. meter , centimeter , millimeter
+ * @param {object} objectOfUnits SI metric units without the SI prefix
+ * @returns SI metric units with prefix
+ */
+function withSIPrefixLong(objectOfUnits) {
+	for (const unit in objectOfUnits) {
+		const value = objectOfUnits[unit]
+		SIScalers.forEach(prefix => {
+			objectOfUnits[`${prefix.longPrefix}${unit}`] = prefix.multiplier * value
+			if (unit !== 'hertz')
+				objectOfUnits[`${prefix.longPrefix}${unit}s`] = prefix.multiplier * value
+		})
+	}
+	return objectOfUnits
+}
+
+/**
+ * add a new key for each key with an s suffix
+ * @param {object} objectOfUnits
+ *
+ */
+function withPrularSuffix(objectOfUnits) {
+	for (const unit in objectOfUnits) {
+		if (!unit.endsWith('s')) {
+			objectOfUnits[`${unit}s`] = objectOfUnits[unit]
+		} else {
+			objectOfUnits[`${unit}es`] = objectOfUnits[unit]
+		}
+	}
+	return objectOfUnits;
+}
+
+/**
+ * 
+ * takes an object of units like m and adds the SI prefix units ex. m , cm , mm 
+ * @param {object} objectOfUnits SI metric units without the SI prefix
+ * @returns SI metric units with prefix
+ */
+function withSIPrefixShort(objectOfUnits) {
+	for (const unit in objectOfUnits) {
+		const value = objectOfUnits[unit]
+		SIScalers.forEach(prefix => objectOfUnits[`${prefix.shortPrefix}${unit}`] = prefix.multiplier * value)
+	}
+	return objectOfUnits
+}
+const second = 1;
 const minute = second * 60;
 const hour = minute * 60;
 const day = hour * 24;
@@ -7,29 +79,19 @@ const week = day * 7;
 const year = (day * 365) + (hour * 6); // 365 days and 6 hours
 
 const timeUnits = {
-
-	milliseconds: millisecond,
-	seconds: second,
-	minutes: minute,
-	hours: hour,
-	days: day,
-	weeks: week,
-	years: year,
-
-	millisecond,
-	second,
-	minute,
-	hour,
-	day,
-	week,
-	year,
+	...withSIPrefixLong({ second }),
+	...withSIPrefixShort({ s: 1 }),
+	...withPrularSuffix({
+		minute,
+		hour,
+		day,
+		week,
+		year,
+	}),
 	now: Date.now(),
 	tomorrow: 0,
 	yesterday: 0,
 
-
-	ms: millisecond,
-	s: second,
 	min: minute,
 	h: hour,
 	d: day,
@@ -37,37 +99,24 @@ const timeUnits = {
 	y: year,
 };
 
-const millimeter = 1;
-const centimeter = millimeter * 10;
-const meter = centimeter * 100;
-const kilometer = meter * 1000;
-const inch = millimeter * 25.4;
+const meter = 1;
+const inch = meter * 0.0254;
 const foot = inch * 12;
 const yard = foot * 3;
-const mile = kilometer * 1.609344;
+const mile = meter * 1609.344;
 
 const lengthUnits = {
-	millimeters: millimeter,
-	centimeters: centimeter,
-	meters: meter,
-	kilometers: kilometer,
+	...withSIPrefixLong({ meter }),
+	...withSIPrefixShort({ m: 1 }),
 	inches: inch,
 	yards: yard,
 	miles: mile,
 
-	millimeter,
-	centimeter,
-	meter,
-	kilometer,
 	inch,
 	foot,
 	yard,
 	mile,
 
-	mm: millimeter,
-	cm: centimeter,
-	m: meter,
-	km: kilometer,
 	in: inch,
 	ft: foot,
 	yd: yard,
@@ -75,50 +124,13 @@ const lengthUnits = {
 };
 
 const byte = 1;
-const kilobyte = byte * 1024;
-const megabyte = kilobyte * 1024;
-const gigabyte = megabyte * 1024;
-const terabyte = gigabyte * 1024;
-const petabyte = terabyte * 1024;
-const exabyte = petabyte * 1024;
-const zettabyte = exabyte * 1024;
-const yottabyte = zettabyte * 1024;
-
 const sizeUnits = {
-	bytes: byte,
-	kilobytes: kilobyte,
-	megabytes: megabyte,
-	gigabytes: gigabyte,
-	terabytes: terabyte,
-	petabytes: petabyte,
-	exabytes: exabyte,
-	zettabytes: zettabyte,
-	yottabytes: yottabyte,
-
-	byte,
-	kilobyte,
-	megabyte,
-	gigabyte,
-	terabyte,
-	petabyte,
-	exabyte,
-	zettabyte,
-	yottabyte,
-
-
-	B: byte,
-	KB: kilobyte,
-	MB: megabyte,
-	GB: gigabyte,
-	TB: terabyte,
-	PB: petabyte,
-	EB: exabyte,
-	ZB: zettabyte,
-	YB: yottabyte,
+	...withSIPrefixLong({ byte }),
+	...withSIPrefixShort({ B: 1 }),
 };
 
-const milliliter = 1;
-const liter = milliliter * 1000;
+const liter = 1;
+const milliliter = liter * 1000
 const cubic_centimeter = milliliter;
 const cubic_meter = liter * 1000;
 const teaspoon = milliliter * 4.92892;
@@ -133,8 +145,9 @@ const cubic_foot = milliliter * 28316.8;
 const cubic_yard = milliliter * 764555;
 
 const volumeUnits = {
-	milliliters: milliliter,
-	liters: liter,
+	...withSIPrefixLong({ liter }),
+	...withSIPrefixShort({ L: 1 }),
+	...withSIPrefixShort({ l: 1 }),
 	cubic_centimeters: cubic_centimeter,
 	cubic_meters: cubic_meter,
 	teaspoons: teaspoon,
@@ -148,8 +161,6 @@ const volumeUnits = {
 	cubic_foots: cubic_foot,
 	cubic_yards: cubic_yard,
 
-	milliliter,
-	liter,
 	cubic_centimeter,
 	cubic_meter,
 	teaspoon,
@@ -163,8 +174,6 @@ const volumeUnits = {
 	cubic_foot,
 	cubic_yard,
 
-	ml: milliliter,
-	l: liter,
 	cc: cubic_centimeter,
 	m3: cubic_meter,
 	tsp: teaspoon,
@@ -178,33 +187,23 @@ const volumeUnits = {
 	ft3: cubic_foot,
 	yd3: cubic_yard,
 };
-const milligram = 1;
-const gram = milligram * 1000;
-const kilogram = gram * 1000;
-const microgram = milligram / 1000;
-const pound = kilogram * 2.20462;
+const gram = 1;
+const pound = gram * 0.0220462;
 const ounce = pound / 16;
+const ton = gram * 1000 * 1000;
+// TODO: add ton
 const massUnits = {
-	micrograms: microgram,
-	milligrams: milligram,
-	grams: gram,
-	kilograms: kilogram,
-	pounds: pound,
-	ounces: ounce,
+	...withSIPrefixLong({ gram }),
+	...withSIPrefixShort({ g: 1 }),
 
-	microgram,
-	milligram,
-	gram,
-	kilogram,
-	pound,
 	ounce,
-
-	mcg: microgram,
-	mg: milligram,
-	g: gram,
-	kg: kilogram,
+	ounces: ounce,
+	oz: ounce,
+	pound,
 	lb: pound,
-	oz: ounce
+	pounds: pound,
+	ton,
+	tons: ton,
 }
 
 
@@ -283,11 +282,7 @@ const areaUnits = (() => {
 })()
 
 const watt = 1;
-const kilowatt = watt * 1000;
-const megawatt = kilowatt * 1000;
-const gigawatt = megawatt * 1000;
-const milliwatt = watt / 1000;
-const microwatt = milliwatt / 1000;
+
 const horsepower = watt * 745.7;
 const mechanicalHorsepower = watt * 745.7;
 const metricHorsepower = watt * 735.5;
@@ -296,21 +291,20 @@ const btuPerHour = watt * 0.29307107;
 const ergPerSecond = watt / 10000000;
 const caloriePerSecond = watt / 4.184;
 const voltAmpere = watt;
-const kilovoltAmpere = kilowatt;
-const megavoltAmpere = megawatt;
-const gigavoltAmpere = gigawatt;
+
 const lumenPerSecond = watt;
 const thermochemicalHorsepower = watt * 735.5;
 const electricalHorsepower = watt * 746;
 const boilerHorsepower = watt * 9810;
 
 const powerUnits = {
-	watt,
-	kilowatt,
-	megawatt,
-	gigawatt,
-	milliwatt,
-	microwatt,
+
+	...withSIPrefixLong({ watt }),
+	...withSIPrefixShort({ W: 1 }),
+
+	...withSIPrefixLong({ voltAmpere }),
+	...withSIPrefixShort({ VA: voltAmpere }),
+
 	horsepower,
 	mechanicalHorsepower,
 	metricHorsepower,
@@ -318,210 +312,108 @@ const powerUnits = {
 	btuPerHour,
 	ergPerSecond,
 	caloriePerSecond,
+
 	voltAmpere,
-	kilovoltAmpere,
-	megavoltAmpere,
-	gigavoltAmpere,
 	lumenPerSecond,
 	thermochemicalHorsepower,
 	electricalHorsepower,
 	boilerHorsepower,
 
-	W: watt,
-	kW: kilowatt,
-	MW: megawatt,
-	GW: gigawatt,
-	mW: milliwatt,
-	µW: microwatt,
 	hp: horsepower,
 	ftLbPerS: footPoundPerSecond,
 	BTUPerH: btuPerHour,
 	ergPerS: ergPerSecond,
 	calPerS: caloriePerSecond,
-	VA: voltAmpere,
-	kVA: kilovoltAmpere,
-	MVA: megavoltAmpere,
-	GVA: gigavoltAmpere,
 	lmPerS: lumenPerSecond,
+
 	thp: thermochemicalHorsepower,
 	ehp: electricalHorsepower,
 	bhp: boilerHorsepower
 };
 const ampere = 1;
-const kiloampere = ampere * 1000;
-const megaampere = kiloampere * 1000;
-const gigaampere = megaampere * 1000;
-const milliampere = ampere / 1000;
-const microampere = milliampere / 1000;
 
 const currentUnits = {
-	amperes: ampere,
-	kiloamperes: kiloampere,
-	megaamperes: megaampere,
-	gigaamperes: gigaampere,
-	milliamperes: milliampere,
-	microamperes: microampere,
-
-	ampere,
-	kiloampere,
-	megaampere,
-	gigaampere,
-	milliampere,
-	microampere,
-
-	A: ampere,
-	kA: kiloampere,
-	MA: megaampere,
-	GA: gigaampere,
-	mA: milliampere,
-	µA: microampere
+	...withSIPrefixLong({ ampere }),
+	...withSIPrefixShort({ A: 1 }),
 };
 
 const pascal = 1;
-const kilopascal = pascal * 1000;
-const megapascal = kilopascal * 1000;
-const gigapascal = megapascal * 1000;
-const millipascal = pascal / 1000;
-const micropascal = millipascal / 1000;
+
 const bar = pascal * 100000;
-const millibar = bar / 1000;
+
 const atmosphere = pascal * 101325;
 const torr = pascal * 133.322;
 const psi = pascal * 6894.76;
 
 const pressureUnits = {
-	pascals: pascal,
-	kilopascals: kilopascal,
-	megapascals: megapascal,
-	gigapascals: gigapascal,
-	millipascals: millipascal,
-	micropascals: micropascal,
-	bars: bar,
-	millibars: millibar,
+	...withSIPrefixLong({ pascal }),
+	...withSIPrefixShort({ Pa: 1 }),
+
+
+	...withSIPrefixLong({ bar }),
+	// ...withSIPrefixShort({ : 1 }),
 	atmospheres: atmosphere,
 	torrs: torr,
-	psi: psi,
 
-	pascal,
-	kilopascal,
-	megapascal,
-	gigapascal,
-	millipascal,
-	micropascal,
 	bar,
-	millibar,
 	atmosphere,
 	torr,
 	psi,
 
-	Pa: pascal,
-	kPa: kilopascal,
-	MPa: megapascal,
-	GPa: gigapascal,
-	mPa: millipascal,
-	µPa: micropascal,
-	bar: bar,
-	mbar: millibar,
 	atm: atmosphere,
 	Torr: torr,
-	psi: psi
 };
 const newton = 1;
-const kilonewton = newton * 1000;
-const megnewton = kilonewton * 1000;
+
 const poundForce = newton * 4.44822;
 const dyne = newton / 10e5;
 
 const forceUnits = {
-	newtons: newton,
-	kilonewtons: kilonewton,
-	megnewtons: megnewton,
+	...withSIPrefixLong({ newton }),
+	...withSIPrefixShort({ N: 1 }),
 	poundForces: poundForce,
 	dynes: dyne,
 
 	newton,
-	kilonewton,
-	megnewton,
 	poundForce,
 	dyne,
 
-	N: newton,
-	kN: kilonewton,
-	MN: megnewton,
 	lbf: poundForce,
 	dyn: dyne
 };
 
 const hertz = 1;
-const kilohertz = hertz * 1000;
-const megahertz = kilohertz * 1000;
-const gigahertz = megahertz * 1000;
-const millihertz = hertz / 1000;
-const microhertz = millihertz / 1000;
 
 const frequencyUnits = {
-	hertz: hertz,
-	kilohertz: kilohertz,
-	megahertz: megahertz,
-	gigahertz: gigahertz,
-	millihertz: millihertz,
-	microhertz: microhertz,
-
-	hertz,
-	kilohertz,
-	megahertz,
-	gigahertz,
-	millihertz,
-	microhertz,
-
-	Hz: hertz,
-	kHz: kilohertz,
-	MHz: megahertz,
-	GHz: gigahertz,
-	mHz: millihertz,
-	µHz: microhertz
+	...withSIPrefixLong({ hertz }),
+	...withSIPrefixShort({ Hz: 1 }),
 };
 
 const joule = 1;
-const kilojoule = joule * 1000;
-const megajoule = kilojoule * 1000;
-const gigajoule = megajoule * 1000;
+
 const calorie = joule * 4.184;
-const kilocalorie = calorie * 1000;
+
 const britishThermalUnit = joule * 1055.06;
 const electronvolt = joule * 1.60218e-19;
 const kilowattHour = joule * 3.6e6;
 
 const energyUnits = {
-	joules: joule,
-	kilojoules: kilojoule,
-	megajoules: megajoule,
-	gigajoules: gigajoule,
-	calories: calorie,
-	kilocalories: kilocalorie,
+
+	...withSIPrefixLong({ joule }),
+	...withSIPrefixShort({ J: 1 }),
+
+	...withSIPrefixLong({ calorie }),
+	...withSIPrefixShort({ cal: calorie }),
+
+	...withSIPrefixLong({ wattHour: kilowattHour / 1000 }),
+	...withSIPrefixShort({ Wh: kilowattHour / 1000 }),
+
+
 	britishThermalUnits: britishThermalUnit,
 	electronvolts: electronvolt,
-	kilowattHours: kilowattHour,
 
-	joule,
-	kilojoule,
-	megajoule,
-	gigajoule,
-	calorie,
-	kilocalorie,
-	britishThermalUnit,
-	electronvolt,
-	kilowattHour,
-
-	J: joule,
-	kJ: kilojoule,
-	MJ: megajoule,
-	GJ: gigajoule,
-	cal: calorie,
-	kcal: kilocalorie,
 	BTU: britishThermalUnit,
 	eV: electronvolt,
-	kWh: kilowattHour
 };
 
 const allCategories = [
@@ -551,6 +443,7 @@ export function areAreaUnits(unit1, unit2) {
  * @returns {boolean}
  * */
 export function areSameCatagory(unit1, unit2) {
+	// TODO: add speed , density , volume
 	if (unit1 == 1 && unit2 == 1) return true
 	const categories = allCategories
 	for (let i = 0; i < categories.length; i++) {
@@ -565,7 +458,6 @@ export function isTemprtureUnit(unit) {
 	return unit in temprtureUnitsToKelvin
 }
 
-// IMPORTANT: order matters here for areaUnits and length units and areaUnits must be before lengthUnits
 const units = {
 	"1": 1,
 	...timeUnits, ...areaUnits, ...lengthUnits, ...sizeUnits, ...volumeUnits,
