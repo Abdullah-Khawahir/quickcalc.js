@@ -1,6 +1,6 @@
 import { parseUnit } from './unit-parsing.js';
 import { areSameCatagory, getConvertingFunction, getUnitCatagory, isTemprtureUnit, temprtureUnitsToKelvin } from './units.js';
-let DECEMAL = 5
+let DECEMAL = 7
 /**
  * Converts a value from one unit to another.
  * @param {number} value - The value to convert.
