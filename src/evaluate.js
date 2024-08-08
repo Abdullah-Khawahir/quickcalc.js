@@ -49,16 +49,14 @@ function addImplicitMultiplication(tokens) {
 	const ret = [];
 	const operators = new Set(['**', '-', '/', '*', '+', ..."()"]);
 
-	tokens.forEach((item, index, arr) => {
-		// Always push the current item
-		ret.push(item);
+	for (let i = 0; i < tokens.length; ++i) {
+		const item = tokens[i]
+		ret.push(item)
 
-		// If current item is not an operator and the next item is not an operator
-		if (index + 1 < arr.length && !operators.has(item) && !operators.has(arr[index + 1])) {
+		if (i + 1 < tokens.length && !operators.has(item) && !operators.has(tokens[i + 1])) {
 			ret.push('*');
 		}
-	});
-
+	}
 	return ret;
 }
 /**
