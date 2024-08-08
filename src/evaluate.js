@@ -6,7 +6,8 @@ import { convert } from './convert.js'
  * @returns {Array<string>}
  * */
 export function syntaxToken(input) {
-	const numberPattern = /(?:\d+\.\d*|\.\d+|\d+)/;  // Matches 10, 10.35, .33, etc.
+	const exponentialNumberPattern = /[-+]?\d*\.?\d+e[-+]?\d+/i;  // Matches 10e1, -10.35e+2, -.33e7, .02e3 etc.
+	const numberPattern = /[-+]?(?:\d+\.\d*|\.\d+|\d+)/;  // Matches -10, +10.35, -.33, etc.
 	const keywordPattern = /\bto\b/;        // Matches the keyword "to"
 	const exponentiationPattern = /\*\*/;   // Matches the exponentiation operator '**'
 	const operatorPattern = /[\+\-\*/\^\(\)]/;  // Matches arithmetic operators +, -, *, /, and ^
@@ -15,6 +16,7 @@ export function syntaxToken(input) {
 
 	// Combined regex to match all token types
 	const combinedPattern = new RegExp([
+		exponentialNumberPattern.source,
 		numberPattern.source,
 		keywordPattern.source,
 		exponentiationPattern.source,
