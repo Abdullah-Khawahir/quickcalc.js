@@ -1,7 +1,10 @@
+import { parseUnit } from "./unit-parsing.js";
+import { eq } from './object-equal.js'
+
 const SIScalers = [
-	{ shortPrefix: 'Q', longPrefix: 'quetta', multiplier: 1e30 },
-	{ shortPrefix: 'R', longPrefix: 'ronna', multiplier: 1e27 },
-	{ shortPrefix: 'Y', longPrefix: 'yotta', multiplier: 1e24 },
+	// { shortPrefix: 'Q', longPrefix: 'quetta', multiplier: 1e30 },
+	// { shortPrefix: 'R', longPrefix: 'ronna', multiplier: 1e27 },
+	// { shortPrefix: 'Y', longPrefix: 'yotta', multiplier: 1e24 },
 	{ shortPrefix: 'Z', longPrefix: 'zetta', multiplier: 1e21 },
 	{ shortPrefix: 'E', longPrefix: 'exa', multiplier: 1e18 },
 	{ shortPrefix: 'P', longPrefix: 'peta', multiplier: 1e15 },
@@ -18,12 +21,12 @@ const SIScalers = [
 	{ shortPrefix: 'μ', longPrefix: 'micro', multiplier: 1e-6 },
 	{ shortPrefix: 'n', longPrefix: 'nano', multiplier: 1e-9 },
 	{ shortPrefix: 'p', longPrefix: 'pico', multiplier: 1e-12 },
-	{ shortPrefix: 'f', longPrefix: 'femto', multiplier: 1e-15 },
-	{ shortPrefix: 'a', longPrefix: 'atto', multiplier: 1e-18 },
-	{ shortPrefix: 'z', longPrefix: 'zepto', multiplier: 1e-21 },
-	{ shortPrefix: 'y', longPrefix: 'yocto', multiplier: 1e-24 },
-	{ shortPrefix: 'r', longPrefix: 'ronto', multiplier: 1e-27 },
-	{ shortPrefix: 'q', longPrefix: 'quecto', multiplier: 1e-30 }
+	// { shortPrefix: 'f', longPrefix: 'femto', multiplier: 1e-15 },
+	// { shortPrefix: 'a', longPrefix: 'atto', multiplier: 1e-18 },
+	// { shortPrefix: 'z', longPrefix: 'zepto', multiplier: 1e-21 },
+	// { shortPrefix: 'y', longPrefix: 'yocto', multiplier: 1e-24 },
+	// { shortPrefix: 'r', longPrefix: 'ronto', multiplier: 1e-27 },
+	// { shortPrefix: 'q', longPrefix: 'quecto', multiplier: 1e-30 }
 ];
 /**
  * takes an object of units like meter and adds the SI prefix units ex. meter , centimeter , millimeter
@@ -123,10 +126,14 @@ const lengthUnits = {
 	mi: mile,
 };
 
-const byte = 1;
+const bit = 1;
+const byte = 8;
 const sizeUnits = {
+	...withSIPrefixLong({ bit }),
+	...withSIPrefixShort({ b: 1 }),
+
 	...withSIPrefixLong({ byte }),
-	...withSIPrefixShort({ B: 1 }),
+	...withSIPrefixShort({ B: 8 }),
 };
 
 const liter = 1;
@@ -148,6 +155,7 @@ const volumeUnits = {
 	...withSIPrefixLong({ liter }),
 	...withSIPrefixShort({ L: 1 }),
 	...withSIPrefixShort({ l: 1 }),
+	// ...withSIPrefixShort({ m3: 0.001 }),
 	cubic_centimeters: cubic_centimeter,
 	cubic_meters: cubic_meter,
 	teaspoons: teaspoon,
@@ -175,7 +183,7 @@ const volumeUnits = {
 	cubic_yard,
 
 	cc: cubic_centimeter,
-	m3: cubic_meter,
+	// m3: cubic_meter,
 	tsp: teaspoon,
 	tbsp: tablespoon,
 	fl_oz: fluid_ounce,
@@ -183,15 +191,14 @@ const volumeUnits = {
 	pt: pint,
 	qt: quart,
 	gal: gallon,
-	in3: cubic_inch,
-	ft3: cubic_foot,
-	yd3: cubic_yard,
+	// in3: cubic_inch,
+	// ft3: cubic_foot,
+	// yd3: cubic_yard,
 };
 const gram = 1;
 const pound = gram * 0.0220462;
 const ounce = pound / 16;
 const ton = gram * 1000 * 1000;
-// TODO: add ton
 const massUnits = {
 	...withSIPrefixLong({ gram }),
 	...withSIPrefixShort({ g: 1 }),
@@ -416,8 +423,8 @@ const energyUnits = {
 	eV: electronvolt,
 };
 
-const allCategories = [
-	timeUnits, lengthUnits, sizeUnits, volumeUnits,
+export const allCategories = [
+	volumeUnits, timeUnits, lengthUnits, sizeUnits,
 	temprtureUnitsToKelvin, areaUnits, massUnits,
 	powerUnits, currentUnits, pressureUnits, forceUnits,
 	frequencyUnits, energyUnits,
@@ -443,16 +450,53 @@ export function areAreaUnits(unit1, unit2) {
  * @returns {boolean}
  * */
 export function areSameCatagory(unit1, unit2) {
-	// TODO: add speed , density , volume
-	if (unit1 == 1 && unit2 == 1) return true
-	const categories = allCategories
-	for (let i = 0; i < categories.length; i++) {
-		const category = categories[i];
-		if ((unit1 in category) && (unit2 in category)) {
-			return true
+	const u1 = parseUnit(unit1)
+	const u2 = parseUnit(unit2)
+	let isSameBase = false;
+	let isSameDivisor = false;
+	let isSameBaseExpo = false;
+	let isSameDivisorExpo = false;
+	for (let i = 0; i < allCategories.length; i++) {
+		const category = allCategories[i];
+		if (`${u1.base.name}${u1.base.exponent}` in category && `${u2.base.name}${u2.base.exponent}` in category ||
+			u1.base.name in category && u2.base.name in category
+		) {
+
+			if (
+				u1.base.exponent === u2.base.exponent ||
+				(eq(category, volumeUnits) && (u1.base.exponent === 3 || u2.base.exponent === 3))
+			) {
+				isSameBase = true
+				isSameBaseExpo = true
+				break;
+			}
 		}
 	}
-	return false
+	for (let i = 0; i < allCategories.length; i++) {
+		const category = allCategories[i];
+		if (u1.base.name == u2.base.name) {
+			isSameDivisor = true
+		}
+		if (u1.base.exponent == u2.base.exponent) {
+			isSameDivisorExpo = true
+		}
+		if (u1.divisor.name == '1' && u2.divisor.name == '1') {
+			isSameDivisor = true
+			isSameDivisorExpo = true
+		}
+
+		if (`${u1.divisor.name}${u1.divisor.exponent}` in category &&
+			`${u2.divisor.name}${u2.divisor.exponent}` in category ||
+			u1.divisor.name in category && u2.divisor.name in category) {
+
+			if (u1.divisor.exponent === u2.divisor.exponent) {
+				isSameDivisor = true
+				isSameDivisorExpo = true
+				break;
+			}
+		}
+	}
+	return isSameBase && isSameDivisor && isSameBaseExpo && isSameDivisorExpo
 }
 export function isTemprtureUnit(unit) {
 	return unit in temprtureUnitsToKelvin
@@ -468,7 +512,7 @@ const units = {
 /**
  *
  * @param {string} unit 
- * @returns {timeUnits | lengthUnits | sizeUnits | volumeUnits | temprtureUnitsToKelvin | areaUnits | powerUnits| currentUnits}
+ * @returns {Object}
  */
 export function getUnitCatagory(unit) {
 	if (unit == 1) return units
@@ -481,6 +525,7 @@ export function getUnitCatagory(unit) {
 	return undefined
 }
 export {
-	timeUnits, lengthUnits, sizeUnits, volumeUnits, temprtureUnitsToKelvin, areaUnits, powerUnits, currentUnits, pressureUnits, forceUnits,
-	frequencyUnits, energyUnits, units
+	areaUnits, currentUnits, energyUnits, forceUnits,
+	frequencyUnits, lengthUnits, powerUnits, pressureUnits, sizeUnits, temprtureUnitsToKelvin, timeUnits, units, volumeUnits
 };
+

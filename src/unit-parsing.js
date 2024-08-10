@@ -31,23 +31,19 @@ export function _getExponantialUnits(unit) {
 }
 
 export function _breakCompoundUnit(unit) {
-	const parts = unit.split(/(per|\/)/i).filter(Boolean);
-	if (parts.length === 3) {
-		const [unit1, per, unit2] = parts.map(s => s.trim());
-		if (['/', 'per'].includes(per.trim())) {
-			return { baseUnit: unit1, divisorUnit: unit2 };
-		}
-	} else if (parts.length > 3) {
-		const perIndex = parts.findIndex((item) => ['/', 'per'].includes(item));
-		if (perIndex != -1) {
-			const [unit1, per, unit2] = parts.slice(perIndex - 1);
-			if (['/', 'per'].includes(per.trim())) {
-				return { baseUnit: unit1, divisorUnit: unit2 };
-			}
-		}
-	} else if (!unit.includes('/') || !unit.includes('per')) {
-		return { baseUnit: unit, divisorUnit: '1' };
+	if (!unit.includes('/')) {
+		return { baseUnit: unit.trim(), divisorUnit: '1' };
 	}
 
-	return undefined;
+	const parts = unit.split('/').map(s => s.trim()).filter(Boolean);
+
+	if (parts.length === 2) {
+		return { baseUnit: parts[0], divisorUnit: parts[1] };
+	} else if (parts.length > 2) {
+		const baseUnit = parts[0];
+		const divisorUnit = parts.slice(1).join('/');
+		return { baseUnit, divisorUnit };
+	}
+
+	return undefined; // Return undefined for unhandled cases
 }

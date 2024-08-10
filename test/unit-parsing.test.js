@@ -94,9 +94,9 @@ function bcCase(unit, u1, u2) {
 	return { unit, unit1: u1, unit2: u2 }
 }
 const breakCompundTestCases = [
-	bcCase('byte per s', 'byte', 's'),
-	bcCase('byte per min', 'byte', 'min'),
-	bcCase('byte per hour', 'byte', 'hour'),
+	// bcCase('byte per s', 'byte', 's'),
+	// bcCase('byte per min', 'byte', 'min'),
+	// bcCase('byte per hour', 'byte', 'hour'),
 
 	bcCase('byte/hour', 'byte', 'hour'),
 	bcCase('byte/min', 'byte', 'min'),

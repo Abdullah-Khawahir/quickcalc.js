@@ -106,6 +106,10 @@ import { evaluate } from './../src/evaluate.js'
 		tCase("( 4.4e1 ** m ) m to cm"),
 		tCase("( 4.4e+10 ** m ) m to cm"),
 		tCase("( 4.4e-10 ** m ) m to cm"),
+
+
+		tCase("-.1 km/s2 to cm/minute2"),
+		tCase("-.1 km/s2 to cm/minute2"),
 	]
 
 	cases.forEach(testCase => {

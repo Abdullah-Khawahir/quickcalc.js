@@ -12,14 +12,12 @@ let DECEMAL = 7
 export function convert(value, fromUnit, toUnit) {
 	const from = parseUnit(fromUnit)
 	const to = parseUnit(toUnit)
-	if (!areSameCatagory(from.base.name, to.base.name) ||
-		!areSameCatagory(from.divisor.name, to.divisor.name) ||
-		from.base.exponent !== to.base.exponent ||
-		from.divisor.exponent !== to.divisor.exponent) {
+
+	if (!areSameCatagory(fromUnit, toUnit)) {
 
 		throw new Error(`the units are not the same category: ${fromUnit} , ${toUnit}`)
 	}
-	const baseCategory = getUnitCatagory(to.base.name)
+	const baseCategory = getUnitCatagory(from.base.name)
 	const divisorCategory = getUnitCatagory(to.divisor.name)
 
 
@@ -33,20 +31,31 @@ export function convert(value, fromUnit, toUnit) {
 			const convertedOther = (divisorCategory[from.divisor.name] ** from.divisor.exponent) /
 				divisorCategory[to.divisor.name] ** to.divisor.exponent
 
-			return formatNumber(value * (convertedTemp / convertedOther), DECEMAL);
+			return formatNumber((convertedTemp / convertedOther), DECEMAL);
 		}
 		if (isDivisorTemp) {
 			const kelvin = temprtureUnitsToKelvin[from.divisor.name](value) ** from.divisor.exponent;
 			const convertedTemp = getConvertingFunction(to.divisor.name)(kelvin) ** to.divisor.exponent;
-			const convertedOther = value * baseCategory[to.base.name] ** to.base.exponent /
-				(baseCategory[from.base.name] ** from.base.exponent)
+			const convertedOther = value * (
+				(baseCategory[from.base.name] ** from.base.exponent) /
+				(baseCategory[to.base.name] ** from.base.exponent)
+			)
+			// const convertedOther = baseCategory[to.base.name] ** to.base.exponent /
+			// 	(baseCategory[from.base.name] ** from.base.exponent)
 
 			return formatNumber(convertedOther / convertedTemp, DECEMAL);
 		}
 	}
 
-	const baseValue = value * (baseCategory[from.base.name] ** from.base.exponent / divisorCategory[from.divisor.name] ** from.divisor.exponent)
-	const converted = baseValue / (baseCategory[to.base.name] ** to.base.exponent / divisorCategory[to.divisor.name] ** to.divisor.exponent)
+	const baseValue = value * (
+		(baseCategory[from.base.name] ** from.base.exponent) /
+		(divisorCategory[from.divisor.name] ** from.divisor.exponent)
+	)
+
+	const converted = baseValue / (
+		(baseCategory[to.base.name] ** to.base.exponent) /
+		(divisorCategory[to.divisor.name] ** to.divisor.exponent)
+	)
 	return formatNumber(converted, DECEMAL)
 }
 

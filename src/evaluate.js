@@ -12,7 +12,7 @@ export function syntaxToken(input) {
 	const exponentiationPattern = /\*\*/;   // Matches the exponentiation operator '**'
 	const operatorPattern = /[\+\-\*/\^\(\)]/;  // Matches arithmetic operators +, -, *, /, and ^
 	const compoundUnitPattern = /[a-zA-Z]+\d+/; // Matches compound units like m2, cm2, cm3
-	const unitPattern = /[a-zA-Z]+(?:\/[a-zA-Z]+)?/; // Matches simple units and compound units without exponents
+	const unitPattern = /[a-zA-Z]+\d?(?:\/[a-zA-Z]+\d?)?/; // Matches simple units and compound units with exponents
 
 	// Combined regex to match all token types
 	const combinedPattern = new RegExp([
