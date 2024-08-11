@@ -1,5 +1,5 @@
 import { parseUnit } from './unit-parsing.js';
-import { areSameCatagory, getConvertingFunction, getUnitCatagory, isTemprtureUnit, temprtureUnitsToKelvin } from './units.js';
+import { areSameCatagory, areaUnits, getConvertingFunction, getUnitCatagory, isTemprtureUnit, temprtureUnitsToKelvin, volumeUnits } from './units.js';
 let DECEMAL = 7
 /**
  * Converts a value from one unit to another.
@@ -16,10 +16,25 @@ export function convert(value, fromUnit, toUnit) {
 	if (!areSameCatagory(fromUnit, toUnit)) {
 
 		throw new Error(`the units are not the same category: ${fromUnit} , ${toUnit}`)
+	} else if (!fromUnit.includes('/') && !fromUnit.includes('/')) {
+		const endsWithNumber = /\d+$/
+		const fromUnitEndWithNumber = fromUnit.match(endsWithNumber)
+		const toUnitEndWithNumber = toUnit.match(endsWithNumber)
+		if (fromUnitEndWithNumber) {
+			if ([areaUnits, volumeUnits].some(category => fromUnit in category)) {
+				from.base.name = fromUnit
+				from.base.exponent = 1
+			}
+		}
+		if (toUnitEndWithNumber) {
+			if ([areaUnits, volumeUnits].some(category => toUnit in category)) {
+				to.base.name = toUnit
+				to.base.exponent = 1
+			}
+		}
 	}
-	const baseCategory = getUnitCatagory(from.base.name)
-	const divisorCategory = getUnitCatagory(to.divisor.name)
-
+	const baseCategory = getUnitCatagory(fromUnit) ?? getUnitCatagory(from.base.name)
+	const divisorCategory = getUnitCatagory(toUnit) ?? getUnitCatagory(to.divisor.name)
 
 	const isBaseTemp = isTemprtureUnit(from.base.name)
 	const isDivisorTemp = isTemprtureUnit(from.divisor.name)
@@ -49,12 +64,12 @@ export function convert(value, fromUnit, toUnit) {
 
 	const baseValue = value * (
 		(baseCategory[from.base.name] ** from.base.exponent) /
-		(divisorCategory[from.divisor.name] ** from.divisor.exponent)
+		((divisorCategory[from.divisor.name] ?? 1) ** from.divisor.exponent)
 	)
 
 	const converted = baseValue / (
 		(baseCategory[to.base.name] ** to.base.exponent) /
-		(divisorCategory[to.divisor.name] ** to.divisor.exponent)
+		((divisorCategory[to.divisor.name] ?? 1) ** to.divisor.exponent)
 	)
 	return formatNumber(converted, DECEMAL)
 }

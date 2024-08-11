@@ -1,10 +1,9 @@
 import { parseUnit } from "./unit-parsing.js";
-import { eq } from './object-equal.js'
 
 const SIScalers = [
-	// { shortPrefix: 'Q', longPrefix: 'quetta', multiplier: 1e30 },
-	// { shortPrefix: 'R', longPrefix: 'ronna', multiplier: 1e27 },
-	// { shortPrefix: 'Y', longPrefix: 'yotta', multiplier: 1e24 },
+	{ shortPrefix: 'Q', longPrefix: 'quetta', multiplier: 1e30 },
+	{ shortPrefix: 'R', longPrefix: 'ronna', multiplier: 1e27 },
+	{ shortPrefix: 'Y', longPrefix: 'yotta', multiplier: 1e24 },
 	{ shortPrefix: 'Z', longPrefix: 'zetta', multiplier: 1e21 },
 	{ shortPrefix: 'E', longPrefix: 'exa', multiplier: 1e18 },
 	{ shortPrefix: 'P', longPrefix: 'peta', multiplier: 1e15 },
@@ -21,28 +20,38 @@ const SIScalers = [
 	{ shortPrefix: 'μ', longPrefix: 'micro', multiplier: 1e-6 },
 	{ shortPrefix: 'n', longPrefix: 'nano', multiplier: 1e-9 },
 	{ shortPrefix: 'p', longPrefix: 'pico', multiplier: 1e-12 },
-	// { shortPrefix: 'f', longPrefix: 'femto', multiplier: 1e-15 },
-	// { shortPrefix: 'a', longPrefix: 'atto', multiplier: 1e-18 },
-	// { shortPrefix: 'z', longPrefix: 'zepto', multiplier: 1e-21 },
-	// { shortPrefix: 'y', longPrefix: 'yocto', multiplier: 1e-24 },
-	// { shortPrefix: 'r', longPrefix: 'ronto', multiplier: 1e-27 },
-	// { shortPrefix: 'q', longPrefix: 'quecto', multiplier: 1e-30 }
+	{ shortPrefix: 'f', longPrefix: 'femto', multiplier: 1e-15 },
+	{ shortPrefix: 'a', longPrefix: 'atto', multiplier: 1e-18 },
+	{ shortPrefix: 'z', longPrefix: 'zepto', multiplier: 1e-21 },
+	{ shortPrefix: 'y', longPrefix: 'yocto', multiplier: 1e-24 },
+	{ shortPrefix: 'r', longPrefix: 'ronto', multiplier: 1e-27 },
+	{ shortPrefix: 'q', longPrefix: 'quecto', multiplier: 1e-30 }
 ];
 /**
- * takes an object of units like meter and adds the SI prefix units ex. meter , centimeter , millimeter
- * @param {object} objectOfUnits SI metric units without the SI prefix
- * @returns SI metric units with prefix
+ * Takes an object of units like meter and adds the SI prefix units, e.g., meter, centimeter, millimeter.
+ * @param {object} objectOfUnits SI metric units without the SI prefix.
+ * @param {number} exponent The exponent to apply to the SI prefix multipliers (default is 1).
+ * @returns SI metric units with prefix.
  */
-function withSIPrefixLong(objectOfUnits) {
+function withSIPrefixLong(objectOfUnits, exponent = 1) {
 	for (const unit in objectOfUnits) {
-		const value = objectOfUnits[unit]
+		const value = objectOfUnits[unit];
 		SIScalers.forEach(prefix => {
-			objectOfUnits[`${prefix.longPrefix}${unit}`] = prefix.multiplier * value
-			if (unit !== 'hertz')
-				objectOfUnits[`${prefix.longPrefix}${unit}s`] = prefix.multiplier * value
-		})
+			const adjustedMultiplier = Math.pow(prefix.multiplier, exponent);
+			if (value !== 1) {
+				objectOfUnits[`${prefix.longPrefix}${unit}`] = adjustedMultiplier * value;
+				if (unit !== 'hertz') {
+					objectOfUnits[`${prefix.longPrefix}${unit}s`] = adjustedMultiplier * value;
+				}
+			} else {
+				objectOfUnits[`${prefix.longPrefix}${unit}`] = adjustedMultiplier;
+				if (unit !== 'hertz') {
+					objectOfUnits[`${prefix.longPrefix}${unit}s`] = adjustedMultiplier;
+				}
+			}
+		});
 	}
-	return objectOfUnits
+	return objectOfUnits;
 }
 
 /**
@@ -67,12 +76,15 @@ function withPrularSuffix(objectOfUnits) {
  * @param {object} objectOfUnits SI metric units without the SI prefix
  * @returns SI metric units with prefix
  */
-function withSIPrefixShort(objectOfUnits) {
+function withSIPrefixShort(objectOfUnits, exponent = 1) {
 	for (const unit in objectOfUnits) {
-		const value = objectOfUnits[unit]
-		SIScalers.forEach(prefix => objectOfUnits[`${prefix.shortPrefix}${unit}`] = prefix.multiplier * value)
+		const value = objectOfUnits[unit];
+		SIScalers.forEach(prefix => {
+			const adjustedMultiplier = Math.pow(prefix.multiplier, exponent);
+			objectOfUnits[`${prefix.shortPrefix}${unit}`] = value * adjustedMultiplier;
+		});
 	}
-	return objectOfUnits
+	return objectOfUnits;
 }
 const second = 1;
 const minute = second * 60;
@@ -155,7 +167,7 @@ const volumeUnits = {
 	...withSIPrefixLong({ liter }),
 	...withSIPrefixShort({ L: 1 }),
 	...withSIPrefixShort({ l: 1 }),
-	// ...withSIPrefixShort({ m3: 0.001 }),
+	...withSIPrefixShort({ m3: 1000 }, 3),
 	cubic_centimeters: cubic_centimeter,
 	cubic_meters: cubic_meter,
 	teaspoons: teaspoon,
@@ -183,7 +195,6 @@ const volumeUnits = {
 	cubic_yard,
 
 	cc: cubic_centimeter,
-	// m3: cubic_meter,
 	tsp: teaspoon,
 	tbsp: tablespoon,
 	fl_oz: fluid_ounce,
@@ -191,9 +202,9 @@ const volumeUnits = {
 	pt: pint,
 	qt: quart,
 	gal: gallon,
-	// in3: cubic_inch,
-	// ft3: cubic_foot,
-	// yd3: cubic_yard,
+	in3: cubic_inch,
+	ft3: cubic_foot,
+	yd3: cubic_yard,
 };
 const gram = 1;
 const pound = gram * 0.0220462;
@@ -283,7 +294,7 @@ export function areTimeUnits(unit1, unit2) {
 const areaUnits = (() => {
 	let areaUnitsMap = {}
 	for (const key in lengthUnits) {
-		areaUnitsMap[key + '2'] = lengthUnits[key] * lengthUnits[key]
+		areaUnitsMap[key + '2'] = lengthUnits[key] ** 2
 	}
 	return areaUnitsMap
 })()
@@ -458,14 +469,12 @@ export function areSameCatagory(unit1, unit2) {
 	let isSameDivisorExpo = false;
 	for (let i = 0; i < allCategories.length; i++) {
 		const category = allCategories[i];
-		if (`${u1.base.name}${u1.base.exponent}` in category && `${u2.base.name}${u2.base.exponent}` in category ||
-			u1.base.name in category && u2.base.name in category
-		) {
-
-			if (
-				u1.base.exponent === u2.base.exponent ||
-				(eq(category, volumeUnits) && (u1.base.exponent === 3 || u2.base.exponent === 3))
-			) {
+		if (unit1 in category && unit2 in category) {
+			isSameBase = true
+			isSameBaseExpo = true
+			break;
+		} else if (u1.base.name in category && u2.base.name in category) {
+			if (u1.base.exponent === u2.base.exponent) {
 				isSameBase = true
 				isSameBaseExpo = true
 				break;
