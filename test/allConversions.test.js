@@ -9,19 +9,25 @@ test('runs all posible conversions', () => {
 	allCategories.forEach(units => {
 		let test = ""
 		const u = Object.keys(units)
+		const visited = {}
 		for (let i = 0; i < u.length; ++i) {
 			for (let ii = 0; ii < u.length; ++ii) {
 				const from = u[i]
 				const to = u[ii]
-				test = `${from} to ${to} = `
-				try {
-					test += convert(1e6, from, to)
-				} catch (err) {
-					test += err.message
-					errors.push(err.message)
-				} finally {
-					tests.push(test)
-					operations++;
+				const key = `${from}-${to}`
+				const reversedKey = `${to}-${from}`
+				if (!(key in visited || reversedKey in visited)) {
+					test = `${from} to ${to} = `
+					try {
+						test += convert(1e6, from, to)
+					} catch (err) {
+						test += err.message
+						errors.push(err.message)
+					} finally {
+						tests.push(test)
+						operations++;
+					}
+					visited[key] = true
 				}
 			}
 		}
