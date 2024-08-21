@@ -4,8 +4,8 @@
  */
 export function parseUnit(unit) {
 	let compound = _breakCompoundUnit(unit);
-	let baseExpo = _getExponantialUnits(compound.baseUnit);
-	let divisorExpo = _getExponantialUnits(compound.divisorUnit);
+	let baseExpo = _getExponantialUnits(compound?.baseUnit);
+	let divisorExpo = _getExponantialUnits(compound?.divisorUnit);
 
 	return {
 		base: {

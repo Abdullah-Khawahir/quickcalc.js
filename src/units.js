@@ -149,40 +149,31 @@ const sizeUnits = {
 };
 
 const liter = 1;
-const milliliter = liter * 1000
-const cubic_centimeter = milliliter;
-const cubic_meter = liter * 1000;
-const teaspoon = milliliter * 4.92892;
-const tablespoon = milliliter * 14.7868;
-const fluid_ounce = milliliter * 29.5735;
-const cup = milliliter * 240;
-const pint = milliliter * 473.176;
-const quart = milliliter * 946.353;
-const gallon = milliliter * 3785.41;
-const cubic_inch = milliliter * 16.3871;
-const cubic_foot = milliliter * 28316.8;
-const cubic_yard = milliliter * 764555;
+const cubic_centimeter = liter * 1000;
+const teaspoon = liter * 1000 * 4.92892;
+const tablespoon = liter * 1000 * 14.7868;
+const fluid_ounce = liter * 1000 * 29.5735;
+const cup = liter * 4.16667;
+const pint = liter / 1.75975;
+const quart = liter * 1.05669;
+const gallon = liter * 0.264172;
+const cubic_inch = liter * 1000 * 16.3871;
+const cubic_foot = liter * 0.0283168;
+const cubic_yard = liter * 0.00130795;
 
 const volumeUnits = {
 	...withSIPrefixLong({ liter }),
 	...withSIPrefixShort({ L: 1 }),
 	...withSIPrefixShort({ l: 1 }),
 	...withSIPrefixShort({ m3: 1000 }, 3),
-	cubic_centimeters: cubic_centimeter,
-	cubic_meters: cubic_meter,
+
 	teaspoons: teaspoon,
 	tablespoons: tablespoon,
-	fluid_ounces: fluid_ounce,
 	cups: cup,
 	pints: pint,
 	quarts: quart,
 	gallons: gallon,
-	cubic_inchs: cubic_inch,
-	cubic_foots: cubic_foot,
-	cubic_yards: cubic_yard,
 
-	cubic_centimeter,
-	cubic_meter,
 	teaspoon,
 	tablespoon,
 	fluid_ounce,
@@ -190,14 +181,11 @@ const volumeUnits = {
 	pint,
 	quart,
 	gallon,
-	cubic_inch,
-	cubic_foot,
-	cubic_yard,
 
 	cc: cubic_centimeter,
 	tsp: teaspoon,
 	tbsp: tablespoon,
-	fl_oz: fluid_ounce,
+	floz: fluid_ounce,
 	c: cup,
 	pt: pint,
 	qt: quart,
