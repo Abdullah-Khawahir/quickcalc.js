@@ -86,7 +86,7 @@ function withSIPrefixShort(objectOfUnits, exponent = 1) {
 	}
 	return objectOfUnits;
 }
-const second = 1;
+const second = 1000; //ms
 const minute = second * 60;
 const hour = minute * 60;
 const day = hour * 24;
@@ -95,7 +95,7 @@ const year = (day * 365) + (hour * 6); // 365 days and 6 hours
 
 const timeUnits = {
 	...withSIPrefixLong({ second }),
-	...withSIPrefixShort({ s: 1 }),
+	...withSIPrefixShort({ s: 1000 }),
 	...withPrularSuffix({
 		minute,
 		hour,
