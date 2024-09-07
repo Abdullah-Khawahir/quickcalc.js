@@ -143,16 +143,40 @@ const breakCompundTestCases = [
 	bcCase('J/kg', 'J', 'kg'),
 	bcCase('W/kg', 'W', 'kg'),
 
-	bcCase('km/h', 'km', 'h'),
-	bcCase('m/min', 'm', 'min'),
-	bcCase('cm/s', 'cm', 's'),
-	bcCase('mm/ms', 'mm', 'ms'),
-	bcCase('nm/ps', 'nm', 'ps')
+	bcCase('km/h/km/h', 'km/h', 'km/h'),
+	bcCase('m/min/m/min', 'm/min', 'm/min'),
+	bcCase('cm/s/cm/s', 'cm/s', 'cm/s'),
+	bcCase('mm/ms/mm/ms', 'mm/ms', 'mm/ms'),
+	bcCase('nm/ps/nm/ps', 'nm/ps', 'nm/ps'),
+
+	bcCase('kcal/day/kcal/day', 'kcal/day', 'kcal/day'),
+	bcCase('psi/min/psi/min', 'psi/min', 'psi/min'),
+	bcCase('hp/hour/hp/hour', 'hp/hour', 'hp/hour'),
+	bcCase('mL/s/mL/s', 'mL/s', 'mL/s'),
+	bcCase('km3/year/km3/year', 'km3/year', 'km3/year'),
+
+
+	bcCase('kcal/day/kcal/day', 'kcal/day', 'kcal/day'),
+	bcCase('psi/min/psi/min', 'psi/min', 'psi/min'),
+	bcCase('hp/hour/hp/hour', 'hp/hour', 'hp/hour'),
+	bcCase('mL/s/mL/s', 'mL/s', 'mL/s'),
+	bcCase('km3/year/km3/year', 'km3/year', 'km3/year'),
+
+	bcCase('km2/h2/km2/h2', 'km2/h2', 'km2/h2'),
+	bcCase('m2/min2/m2/min2', 'm2/min2', 'm2/min2'),
+
+
+
+	// bcCase('km/s/mps', 'km/s', 'mps'),
+	// bcCase('mps/km/s', 'mps', 'km/s'),
+	// bcCase('mps2/km/s2', 'mps2', 'km/s2'),
+	// bcCase('km2/s2/mps2', 'mps2', 'km2/s2'), //  wtf type of case
+	// bcCase('km/s2/mps2', 'km/s2', 'mps2',),  //  wtf type of case
 ]
 breakCompundTestCases.forEach((testCase) => {
 	const { unit, unit1, unit2 } = testCase
 	const got = _breakCompoundUnit(unit)
-	test(`input :${unit} ,Expected: ${unit1} , ${unit2} , Got: ${got.baseUnit + '/' + got.divisorUnit} `, () => {
+	test(`input :${unit} ,Expected: ${unit1} , ${unit2} , Got: ${got?.baseUnit + '/' + got?.divisorUnit} `, () => {
 		expect(got)
 			.toStrictEqual({ baseUnit: unit1, divisorUnit: unit2 })
 	})

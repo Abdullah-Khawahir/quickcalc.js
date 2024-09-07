@@ -1,5 +1,5 @@
 import { parseUnit } from './unit-parsing.js';
-import { areSameCatagory, areaUnits, getConvertingFunction, getUnitCatagory, isTemprtureUnit, temprtureUnitsToKelvin, volumeUnits } from './units.js';
+import { units, areSameCatagory, areaUnits, getConvertingFunction, getUnitCatagory, isTemprtureUnit, temprtureUnitsToKelvin, volumeUnits } from './units.js';
 let DECEMAL = 7
 /**
  * Converts a value from one unit to another.
@@ -68,9 +68,10 @@ export function convert(value, fromUnit, toUnit) {
 	)
 
 	const converted = baseValue / (
-		(baseCategory[to.base.name] ** to.base.exponent) /
+		((baseCategory[to.base.name] ?? units[to.base.name]) ** to.base.exponent) /
 		((divisorCategory[to.divisor.name] ?? 1) ** to.divisor.exponent)
 	)
+
 	return formatNumber(converted, DECEMAL)
 }
 

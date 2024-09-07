@@ -1,4 +1,4 @@
-import { parseUnit } from "./unit-parsing.js";
+import { _breakCompoundUnit, parseUnit } from "./unit-parsing.js";
 
 const SIScalers = [
 	{ shortPrefix: 'Q', longPrefix: 'quetta', multiplier: 1e30 },
@@ -119,23 +119,27 @@ const inch = meter * 0.0254;
 const foot = inch * 12;
 const yard = foot * 3;
 const mile = meter * 1609.344;
-
+const nauticalMile = 1852;
 const lengthUnits = {
 	...withSIPrefixLong({ meter }),
 	...withSIPrefixShort({ m: 1 }),
 	inches: inch,
 	yards: yard,
 	miles: mile,
+	nauticalMiles: nauticalMile,
 
 	inch,
 	foot,
 	yard,
 	mile,
+	nauticalMile,
 
 	in: inch,
 	ft: foot,
 	yd: yard,
 	mi: mile,
+	nm: nauticalMile,
+	nmi: nauticalMile,
 };
 
 const bit = 1;
@@ -434,26 +438,36 @@ const energyUnits = {
 	eV: electronvolt,
 };
 
+const speedUnits = {
+	"m/s": lengthUnits['m'] / timeUnits['s'],
+	"mph": lengthUnits['mile'] / timeUnits['h'],
+	"kph": lengthUnits['km'] / timeUnits['h'],
+	"knot": lengthUnits['nm'] / timeUnits['h'],
+	"cm/s": lengthUnits['cm'] / timeUnits['s'],
+	"in/s": lengthUnits['in'] / timeUnits['s'],
+	"m/min": lengthUnits['m'] / timeUnits['min'],
+	"km/min": lengthUnits['km'] / timeUnits['min'],
+	"mi/min": lengthUnits['mile'] / timeUnits['min'],
+	"ft/min": lengthUnits['ft'] / timeUnits['min'],
+	"Mach": 343,
+	"ligh": 299792458,
+};
+
 export const allCategories = [
+	speedUnits,
 	volumeUnits, timeUnits, lengthUnits, sizeUnits,
 	temprtureUnitsToKelvin, areaUnits, massUnits,
 	powerUnits, currentUnits, pressureUnits, forceUnits,
 	frequencyUnits, energyUnits,
 ]
-/**
- *
- * @param {string} unit1 
- * @param {string} unit2
- */
-export function areAreaUnits(unit1, unit2) {
-	if (unit1.endsWith('2') && unit2.endsWith('2')) {
-		if (unit1.slice(-1) in lengthUnits && unit2.slice(-1) in lengthUnits) {
-			return true
-		}
-	}
-	return false
-}
 
+const units = {
+	"1": 1,
+	...speedUnits,
+	...timeUnits, ...areaUnits, ...lengthUnits, ...sizeUnits, ...volumeUnits,
+	...temprtureUnitsToKelvin, ...massUnits, ...powerUnits, ...currentUnits,
+	...pressureUnits, ...forceUnits, ...frequencyUnits, ...energyUnits,
+};
 
 /**
  * @param {string} unit1 
@@ -465,18 +479,18 @@ export function areSameCatagory(unit1, unit2) {
 	const u2 = parseUnit(unit2)
 	let isSameBase = false;
 	let isSameDivisor = false;
-	let isSameBaseExpo = false;
-	let isSameDivisorExpo = false;
+	let isSameBasePower = false;
+	let isSameDivisorPower = false;
 	for (let i = 0; i < allCategories.length; i++) {
 		const category = allCategories[i];
 		if (unit1 in category && unit2 in category) {
 			isSameBase = true
-			isSameBaseExpo = true
+			isSameBasePower = true
 			break;
 		} else if (u1.base.name in category && u2.base.name in category) {
 			if (u1.base.exponent === u2.base.exponent) {
 				isSameBase = true
-				isSameBaseExpo = true
+				isSameBasePower = true
 				break;
 			}
 		}
@@ -487,11 +501,11 @@ export function areSameCatagory(unit1, unit2) {
 			isSameDivisor = true
 		}
 		if (u1.base.exponent == u2.base.exponent) {
-			isSameDivisorExpo = true
+			isSameDivisorPower = true
 		}
 		if (u1.divisor.name == '1' && u2.divisor.name == '1') {
 			isSameDivisor = true
-			isSameDivisorExpo = true
+			isSameDivisorPower = true
 		}
 
 		if (`${u1.divisor.name}${u1.divisor.exponent}` in category &&
@@ -500,23 +514,28 @@ export function areSameCatagory(unit1, unit2) {
 
 			if (u1.divisor.exponent === u2.divisor.exponent) {
 				isSameDivisor = true
-				isSameDivisorExpo = true
+				isSameDivisorPower = true
 				break;
 			}
 		}
 	}
-	return isSameBase && isSameDivisor && isSameBaseExpo && isSameDivisorExpo
+	if (isSpeedUnit(unit1) && isSpeedUnit(unit2)) {
+		return true
+	}
+	return isSameBase && isSameDivisor && isSameBasePower && isSameDivisorPower
+}
+
+export function isSpeedUnit(unit) {
+	if (unit == '1') {
+		return true;
+	}
+	unit = parseUnit(unit)
+	return unit.base.name in speedUnits || (unit.base.name in lengthUnits && unit.divisor.name in timeUnits)
 }
 export function isTemprtureUnit(unit) {
 	return unit in temprtureUnitsToKelvin
 }
 
-const units = {
-	"1": 1,
-	...timeUnits, ...areaUnits, ...lengthUnits, ...sizeUnits, ...volumeUnits,
-	...temprtureUnitsToKelvin, ...massUnits, ...powerUnits, ...currentUnits,
-	...pressureUnits, ...forceUnits, ...frequencyUnits, ...energyUnits,
-};
 
 /**
  *
