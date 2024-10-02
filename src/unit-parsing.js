@@ -5,8 +5,8 @@ import { units } from './units.js'
  */
 export function parseUnit(unit) {
 	let compound = _breakCompoundUnit(unit);
-	let basePower = _getExponantialUnits(compound.baseUnit);
-	let divisorPower = _getExponantialUnits(compound.divisorUnit);
+	let baseExpo = _getExponantialUnits(compound?.baseUnit);
+	let divisorExpo = _getExponantialUnits(compound?.divisorUnit);
 
 	return {
 		base: {

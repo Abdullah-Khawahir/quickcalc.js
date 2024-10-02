@@ -107,7 +107,6 @@ export function evaluate(input) {
 
 
 	tokens = addImplicitMultiplication(tokens)
-
 	let isTimeExpression = false;
 	for (const token of tokens) {
 		if (token in timeUnits) {
@@ -117,10 +116,9 @@ export function evaluate(input) {
 	}
 
 	if (isTimeExpression) {
-		// if(tokens.includes('since')) {}
 		let date = new Date()
-		date.setMilliseconds(ScopedJsEval(tokens.join(' '), timeUnits))
-		return date.toLocaleDateString()
+		date.setTime(ScopedJsEval(tokens.join(' '), timeUnits))
+		return date.toLocaleString('en-US', { year: "numeric", month: "numeric", day: "numeric", hour: 'numeric', minute: 'numeric' });
 	}
 
 	return ScopedJsEval(input, units)
@@ -133,13 +131,13 @@ function isNumber(value) {
 function ScopedJsEval(src, ctx) {
 	let now_date = new Date()
 	let yesterday_date = new Date()
-	yesterday_date.setMilliseconds(yesterday_date.getMilliseconds - timeUnits['day'])
+	yesterday_date.setTime(yesterday_date.getTime() - timeUnits['day'])
 	let tomorrow_date = new Date()
-	tomorrow_date.setMilliseconds(tomorrow_date.getMilliseconds + timeUnits['day'])
+	tomorrow_date.setTime(tomorrow_date.getTime() + timeUnits['day'])
 
-	let now = now_date.getMilliseconds()
-	let yesterday = yesterday_date.getMilliseconds()
-	let tomorrow = tomorrow_date.getMilliseconds()
+	let now = now_date.getTime()
+	let yesterday = yesterday_date.getTime()
+	let tomorrow = tomorrow_date.getTime()
 
 
 	// NOTE: copied from stackoverflow https://stackoverflow.com/a/75587774
@@ -154,5 +152,5 @@ function ScopedJsEval(src, ctx) {
 	} catch (err) {
 		throw new Error(`JavaScriptError faild to evalute "${src}" : ${err.message}`)
 	}
-	return evaluation.toString()
+	return evaluation
 }
