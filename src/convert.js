@@ -1,6 +1,6 @@
 import { parseUnit } from './unit-parsing.js';
-import { units, areSameCatagory, areaUnits, getConvertingFunction, getUnitCatagory, isTemprtureUnit, temprtureUnitsToKelvin, volumeUnits } from './units.js';
-let DECEMAL = 7
+import { units, areSameCategory, areaUnits, getConvertingFunction, getUnitCatagory, isTemprtureUnit, temprtureUnitsToKelvin, volumeUnits } from './units.js';
+let DECIMAL = 7
 /**
  * Converts a value from one unit to another.
  * @param {number} value - The value to convert.
@@ -13,7 +13,7 @@ export function convert(value, fromUnit, toUnit) {
 	const from = parseUnit(fromUnit)
 	const to = parseUnit(toUnit)
 
-	if (!areSameCatagory(fromUnit, toUnit)) {
+	if (!areSameCategory(fromUnit, toUnit)) {
 
 		throw new Error(`the units are not the same category: ${fromUnit} , ${toUnit}`)
 	} else if (!fromUnit.includes('/') && !fromUnit.includes('/')) {
@@ -46,7 +46,7 @@ export function convert(value, fromUnit, toUnit) {
 			const convertedOther = (divisorCategory[from.divisor.name] ** from.divisor.exponent) /
 				divisorCategory[to.divisor.name] ** to.divisor.exponent
 
-			return formatNumber((convertedTemp / convertedOther), DECEMAL);
+			return formatNumber((convertedTemp / convertedOther), DECIMAL);
 		}
 		if (isDivisorTemp) {
 			const kelvin = temprtureUnitsToKelvin[from.divisor.name](value) ** from.divisor.exponent;
@@ -55,10 +55,8 @@ export function convert(value, fromUnit, toUnit) {
 				(baseCategory[from.base.name] ** from.base.exponent) /
 				(baseCategory[to.base.name] ** from.base.exponent)
 			)
-			// const convertedOther = baseCategory[to.base.name] ** to.base.exponent /
-			// 	(baseCategory[from.base.name] ** from.base.exponent)
 
-			return formatNumber(convertedOther / convertedTemp, DECEMAL);
+			return formatNumber(convertedOther / convertedTemp, DECIMAL);
 		}
 	}
 
@@ -72,7 +70,7 @@ export function convert(value, fromUnit, toUnit) {
 		((divisorCategory[to.divisor.name] ?? 1) ** to.divisor.exponent)
 	)
 
-	return formatNumber(converted, DECEMAL)
+	return formatNumber(converted, DECIMAL)
 }
 
 function formatNumber(num, decimal) {

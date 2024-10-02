@@ -474,47 +474,47 @@ const units = {
  * @param {string} unit2 
  * @returns {boolean}
  * */
-export function areSameCatagory(unit1, unit2) {
-	const u1 = parseUnit(unit1)
-	const u2 = parseUnit(unit2)
-	let isSameBase = false;
-	let isSameDivisor = false;
-	let isSameBasePower = false;
-	let isSameDivisorPower = false;
+export function areSameCategory(unit1, unit2) {
+	const parsedUnit1 = parseUnit(unit1)
+	const parsedUnit2 = parseUnit(unit2)
+	let sameBase = false;
+	let sameDivisor = false;
+	let sameBasePower = false;
+	let sameDivisorPower = false;
 	for (let i = 0; i < allCategories.length; i++) {
 		const category = allCategories[i];
 		if (unit1 in category && unit2 in category) {
-			isSameBase = true
-			isSameBasePower = true
+			sameBase = true
+			sameBasePower = true
 			break;
-		} else if (u1.base.name in category && u2.base.name in category) {
-			if (u1.base.exponent === u2.base.exponent) {
-				isSameBase = true
-				isSameBasePower = true
+		} else if (parsedUnit1.base.name in category && parsedUnit2.base.name in category) {
+			if (parsedUnit1.base.exponent === parsedUnit2.base.exponent) {
+				sameBase = true
+				sameBasePower = true
 				break;
 			}
 		}
 	}
 	for (let i = 0; i < allCategories.length; i++) {
 		const category = allCategories[i];
-		if (u1.base.name == u2.base.name) {
-			isSameDivisor = true
+		if (parsedUnit1.base.name == parsedUnit2.base.name) {
+			sameDivisor = true
 		}
-		if (u1.base.exponent == u2.base.exponent) {
-			isSameDivisorPower = true
+		if (parsedUnit1.base.exponent == parsedUnit2.base.exponent) {
+			sameDivisorPower = true
 		}
-		if (u1.divisor.name == '1' && u2.divisor.name == '1') {
-			isSameDivisor = true
-			isSameDivisorPower = true
+		if (parsedUnit1.divisor.name == '1' && parsedUnit2.divisor.name == '1') {
+			sameDivisor = true
+			sameDivisorPower = true
 		}
 
-		if (`${u1.divisor.name}${u1.divisor.exponent}` in category &&
-			`${u2.divisor.name}${u2.divisor.exponent}` in category ||
-			u1.divisor.name in category && u2.divisor.name in category) {
+		if (`${parsedUnit1.divisor.name}${parsedUnit1.divisor.exponent}` in category &&
+			`${parsedUnit2.divisor.name}${parsedUnit2.divisor.exponent}` in category ||
+			parsedUnit1.divisor.name in category && parsedUnit2.divisor.name in category) {
 
-			if (u1.divisor.exponent === u2.divisor.exponent) {
-				isSameDivisor = true
-				isSameDivisorPower = true
+			if (parsedUnit1.divisor.exponent === parsedUnit2.divisor.exponent) {
+				sameDivisor = true
+				sameDivisorPower = true
 				break;
 			}
 		}
@@ -522,7 +522,7 @@ export function areSameCatagory(unit1, unit2) {
 	if (isSpeedUnit(unit1) && isSpeedUnit(unit2)) {
 		return true
 	}
-	return isSameBase && isSameDivisor && isSameBasePower && isSameDivisorPower
+	return sameBase && sameDivisor && sameBasePower && sameDivisorPower
 }
 
 export function isSpeedUnit(unit) {
