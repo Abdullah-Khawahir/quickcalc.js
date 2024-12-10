@@ -1,6 +1,6 @@
 import { units, timeUnits, areTimeUnits } from "./units.js"
 import { convert } from './convert.js'
-
+import { convertCurrency, currencyUnits, isCurrencyUnit } from './currency.js'
 /**
  * @param {string} input 
  * @returns {Array<string>}
@@ -13,8 +13,8 @@ export function syntaxToken(input) {
 	const operatorPattern = /[\+\-\*/\^\(\)]/;  // Matches arithmetic operators +, -, *, /, and ^
 	const compoundUnitPattern = /[a-zA-Z]+\d+/; // Matches compound units like m2, cm2, cm3
 	const unitPattern = /[a-zA-Z]+\d?(?:\/[a-zA-Z]+\d?)?/; // Matches simple units and compound units with exponents
+	const oneLetterCurrencySymbols = /(?:\$|€|₡|£|¥|₩|₦|₱|₲|฿|₴|₫)/
 
-	// Combined regex to match all token types
 	const combinedPattern = new RegExp([
 		exponentialNumberPattern.source,
 		numberPattern.source,
@@ -22,14 +22,13 @@ export function syntaxToken(input) {
 		exponentiationPattern.source,
 		operatorPattern.source,
 		compoundUnitPattern.source,
-		unitPattern.source
+		unitPattern.source,
+		oneLetterCurrencySymbols.source
 	].join('|'), 'g');
+
 	const tokens = [];
 	let match;
-
-	// Use the regex to find all matches in the expression
 	while ((match = combinedPattern.exec(input)) !== null) {
-		// Append the matched token to the tokens array
 		tokens.push(match[0]);
 	}
 	return tokens;
@@ -63,12 +62,11 @@ function addImplicitMultiplication(tokens) {
 }
 /**
  * @param {string} input 
- * @returns {string} the evaluated value
  * @throws when the syntax wrong 
  * @throws when the fails to evaluate JavaScript
  * 
  **/
-export function evaluate(input) {
+export async function evaluate(input) {
 	if (!input.trim()) {
 		return ""
 	}
@@ -80,7 +78,7 @@ export function evaluate(input) {
 		let leftOfFromUnit = tokens.slice(0, toKeywordIndex - 1)?.join(' ')
 
 		if (isMathExpression(leftOfFromUnit)) { // if the left of conversion is math expression
-			value = evaluate(leftOfFromUnit)
+			value = await evaluate(leftOfFromUnit)
 		}
 		if (!isNumber(value)) {
 			value = units[value]
@@ -100,6 +98,10 @@ export function evaluate(input) {
 
 		if (areTimeUnits(fromUnit, toUnit)) {
 			return `${convert(+value, fromUnit.trim(), toUnit.trim())} ${toUnit}`
+		}
+
+		if (isCurrencyUnit(fromUnit) && isCurrencyUnit(toUnit)) {
+			return `${await convertCurrency(+value, fromUnit.trim(), toUnit.trim())} ${toUnit}`
 		}
 
 		return `${convert(+value, fromUnit.trim(), toUnit.trim())} ${toUnit}`

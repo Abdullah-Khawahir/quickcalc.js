@@ -6,18 +6,24 @@ import { evaluate } from './evaluate.js'
  * @throws mulitple erros 
  * */
 export function evaluateElement(htmlElement, onError) {
-	const input = htmlElement?.value
+	const input = htmlElement?.value;
+	let ret = undefined;
 	if (!input) {
 		return undefined;
 	}
 	try {
-		const evaluation = evaluate(input)
-		if (evaluation) return evaluation;
+		evaluate(input)
+			.then((val) => ret = val)
+			.catch((err) => {
+				if (onError !== undefined) onError(err);
+			});
 	} catch (err) {
-		if (onError !== undefined) onError(err)
+		if (onError !== undefined) onError(err);
 	}
-	return undefined;
+	return ret;
 }
+
+
 
 /**
  * @param {HTMLInputElement } element name
@@ -26,13 +32,15 @@ export function evaluateElement(htmlElement, onError) {
  * @throws mulitple erros 
  * */
 export function evaluateStringExpression(stringExpr, onError) {
+	let ret = undefined
 	try {
-		const evaluation = evaluate(stringExpr)
-		if (evaluation) return evaluation
+		evaluate(stringExpr)
+			.then((val) => { ret = val })
+			.catch(err => { if (onError) onError(err) })
 	} catch (err) {
 		if (onError !== undefined) onError(err)
 	}
-	return undefined;
+	return ret;
 }
 /**
  *
@@ -55,10 +63,10 @@ export function bindHtmlElements(sourceSelector, destinationSelector, onError) {
 		if (!('value' in sourceElement) && !('innerText' in sourceElement)) {
 			throw new Error(`Source element does not have 'value' or 'innerText' fields`);
 		}
-		sourceElement.addEventListener('input', (e) => {
+		sourceElement.addEventListener('input', async (e) => {
 			try {
 				const inputToEvaluate = e.target.value?.trim();
-				const evaluation = evaluate(inputToEvaluate);
+				const evaluation = await evaluate(inputToEvaluate);
 				if ('value' in destinationElement) {
 					if (evaluation && evaluation.trim() !== inputToEvaluate.trim()) {
 						destinationElement.value = evaluation;

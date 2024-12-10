@@ -1,4 +1,4 @@
-import { areSameCatagory, isSpeedUnit } from "../src/units";
+import { areSameCategory, isSpeedUnit } from "../src/units";
 [// good cases
 	"mph",
 	"km/s",
@@ -23,7 +23,7 @@ import { areSameCatagory, isSpeedUnit } from "../src/units";
 	"min h"
 ].forEach(testCase => {
 	const [u1, u2] = testCase.split(' ');
-	const got = areSameCatagory(u1, u2)
+	const got = areSameCategory(u1, u2)
 	test(`input ${testCase.split(' ')} got: ${got} expected:${true}`, () => {
 		expect(got).toEqual(true);
 	});
@@ -37,7 +37,7 @@ import { areSameCatagory, isSpeedUnit } from "../src/units";
 	"mile kg",
 ].forEach(testCase => {
 	const [u1, u2] = testCase.split(' ');
-	const got = areSameCatagory(u1, u2)
+	const got = areSameCategory(u1, u2)
 	test(`input ${testCase.split(' ')} got: ${got} expected:${false}`, () => {
 		expect(got).toEqual(false)
 	})
