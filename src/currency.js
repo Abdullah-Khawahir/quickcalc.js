@@ -178,7 +178,7 @@ async function convertCurrency(value, fromCurrency, toCurrency) {
     toCurrency = toCurrency.toLowerCase();
     const fromCode = currencyUnits[fromCurrency]?.code.toLowerCase() ?? fromCurrency;
     const toCode = currencyUnits[toCurrency]?.code.toLowerCase() ?? toCurrency;
-    const decimal = currencyUnits['decimal_digits'] ?? 0
+    const decimal = currencyUnits[toCode]['decimal_digits'] ?? 0
     if (coinBaseAPICurrencies.includes(fromCode) && coinBaseAPICurrencies.includes(toCode)) {
         const response = await fetchCoinbaseData(fromCode);
         const convertRate = response.data.rates[toCode.toUpperCase()];
