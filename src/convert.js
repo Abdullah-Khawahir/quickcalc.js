@@ -1,5 +1,6 @@
+import { formatNumber } from './formatNumber.js';
 import { parseUnit } from './unit-parsing.js';
-import { units, areSameCategory, areaUnits, getConvertingFunction, getUnitCatagory, isTemprtureUnit, temprtureUnitsToKelvin, volumeUnits } from './units.js';
+import { areSameCategory, areaUnits, getConvertingFunction, getUnitCatagory, isTemprtureUnit, temprtureUnitsToKelvin, units, volumeUnits } from './units.js';
 let DECIMAL = 7
 /**
  * Converts a value from one unit to another.
@@ -73,18 +74,3 @@ export function convert(value, fromUnit, toUnit) {
 	return formatNumber(converted, DECIMAL)
 }
 
-function formatNumber(num, decimal) {
-	// For very small numbers, ensure they stay in scientific notation
-	if (Math.abs(num) < 1e-6 && num !== 0) {
-		return num.toExponential();
-	}
-
-	// For very large numbers, avoid floating-point precision issues
-	let roundedNum = Number(num.toFixed(decimal));
-	if (roundedNum === 0 && num !== 0) {
-		// Handle very small numbers by keeping them in scientific notation
-		return num.toExponential(decimal);
-	}
-
-	return roundedNum;
-}
